@@ -1,0 +1,11 @@
+# Tudo do requirements.txt + o que só alguns notebooks da pesquisa usam
+-r requirements.txt
+neuralforecast>=1.7        # NHITS, TFT, DeepAR, TSMixer (competição e CompUF3)
+hierarchicalforecast>=0.4  # MinT (fase municipal)
+prophet>=1.1               # competição
+shap>=0.44                 # seleção de variáveis da fase municipal
+torch-geometric-temporal   # AGCRN municipal de junho (notebook histórico)
+xarray>=2024.1             # temperatura do mar ERSST (rodada 4)
+netCDF4>=1.6
+tqdm
+# R (opcional, competição e CompUF): R >= 4.3 com os pacotes INLA (https://www.r-inla.org) e forecast

@@ -1,0 +1,16 @@
+modelo,vies_log_mediana,largura_log_IC90,IC50,IC90,piores_UFs,leitura,R_vs_BB
+ARIMA_Fourier,-0.14651614913562883,2.459928140571974,46.71581553897608,82.37393877025985,"[43, 42, 16]",equilibrado: ganhos devem vir de variáveis ou de ensemble,0.8648157971477973
+climatologia,-0.3728929354324064,2.647333334039083,41.745722922562386,79.0157898121945,"[43, 42, 41]","subestima (mediana baixa): falta sinal de surto / magnitude; intervalos estreitos demais: aumentar incerteza (dispersão, sementes, fatores comuns)",0.9926377680983278
+AR_longo,-0.05386527664257934,2.573202813586192,47.12744404425007,82.4470993053769,"[43, 16, 42]",equilibrado: ganhos devem vir de variáveis ou de ensemble,1.0145271997505667
+LightGBM_direto,-0.15637154536499787,2.6293635595900238,51.031483148958074,83.75916516593773,"[42, 41, 43]",equilibrado: ganhos devem vir de variáveis ou de ensemble,1.0320438050342144
+SURGE,-0.48802798712953455,2.850585572649851,41.41127476202727,80.99434010805248,"[42, 43, 41]",subestima (mediana baixa): falta sinal de surto / magnitude,1.050141651882296
+canal_endemico,-0.3244162118959235,3.067598042724982,48.48694365834832,82.45755081039361,"[43, 42, 53]",subestima (mediana baixa): falta sinal de surto / magnitude,1.0517731878647703
+Renovacao_S,-0.19907671030821206,2.7054078242083803,42.493407512220216,73.22485207100591,"[42, 43, 41]","intervalos estreitos demais: aumentar incerteza (dispersão, sementes, fatores comuns)",1.1670750381381103
+GHR_INLA,-0.2873570853294094,3.5062380803480373,52.031611782865966,85.22719963982506,"[43, 16, 42]",subestima (mediana baixa): falta sinal de surto / magnitude,1.2334310546720804
+XGBoost_quantis,-0.08671672368637995,3.2077134357727783,56.388281450990476,89.13204270645741,"[42, 53, 43]",equilibrado: ganhos devem vir de variáveis ou de ensemble,1.2747546681241302
+Tamanho_x_forma,0.26763183189888107,2.9483410970890103,48.18465397478776,80.08103936197583,"[50, 16, 43]",superestima (mediana alta): reduzir viés / rever tendência ou imunidade,1.3610658363838017
+AGCRN,-0.1411550552249452,3.2807535363794056,52.762413172112176,87.96951376382815,"[42, 41, 53]",equilibrado: ganhos devem vir de variáveis ou de ensemble,1.377595478974267
+Chronos,0.17039113350610946,2.9572931322718046,49.339143298173404,83.27598404939543,"[43, 42, 16]",equilibrado: ganhos devem vir de variáveis ou de ensemble,1.430767420296967
+BB_INLA,-0.11008455622012914,3.8672190574890166,50.22510933882172,86.45967326987395,"[53, 16, 33]",equilibrado: ganhos devem vir de variáveis ou de ensemble,1.554918538200092
+Prophet,0.42935546937621094,1.8800318364972388,26.583804990995624,52.31299845639311,"[33, 16, 42]","superestima (mediana alta): reduzir viés / rever tendência ou imunidade; intervalos estreitos demais: aumentar incerteza (dispersão, sementes, fatores comuns)",1.6314699680453635
+ETS_MSTL,0.6668752614625744,3.194397239993525,39.666677386158995,72.6323321327502,"[43, 27, 42]","superestima (mediana alta): reduzir viés / rever tendência ou imunidade; intervalos estreitos demais: aumentar incerteza (dispersão, sementes, fatores comuns)",1.8333201502650385

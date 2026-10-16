@@ -1,0 +1,11 @@
+[
+ "log_inc_dengue_obs",
+ "log_inc_dengue_obs_lag1",
+ "log_inc_dengue_obs_lag2",
+ "w1_log_inc_dengue_obs",
+ "w2_log_inc_dengue_obs",
+ "temp_min_lag2",
+ "w1_pressure_min_t1",
+ "precip_max_lag3",
+ "biome_encoded"
+]

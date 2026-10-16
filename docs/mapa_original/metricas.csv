@@ -1,0 +1,25 @@
+data,season,versao,descricao,banco,nivel,MAE,RMSE,sMAPE,pearson,IC50,IC90,IC95,olha_o_teste,fonte,observacao
+2026-06-17,1,M1,AGCRN simples + MinT,V3 (antigo),estadual,830.12,2607.10,68.15,0.6683,,,,sim,docx Avaliacao_de_todos_os_modelos,dados com duplicatas
+2026-06-17,1,M1,AGCRN simples + MinT,V3 (antigo),municipal,5.23,50.54,74.59,0.4744,,,,sim,docx,
+2026-06-19,1,M2,Bimodal SECA/PICO + MinT dinamico,V7 (antigo),estadual,476.19,1348.69,63.65,0.9274,59.5,95.9,98.2,sim,docx,previsao desalinhada em 1 semana; losses assimetricas
+2026-06-19,1,M2,Bimodal SECA/PICO + MinT dinamico,V7 (antigo),municipal,3.89,51.27,39.51,0.5623,85.7,96.4,97.7,sim,docx,
+2026-06-19,1,M3,Pico com Multi-Head Attention,V7 (antigo),estadual,979.30,3433.21,95.32,0.3927,33.7,74.5,82.2,sim,docx,treinado sem validacao
+2026-06-19,1,M3,Pico com Multi-Head Attention,V7 (antigo),municipal,4.79,60.36,49.11,0.2511,77.7,,87.6,sim,docx,
+2026-09-29,1,M2 enxuto,Modelo 2 original,V8 FINAL_NN,estadual,748.93,1676.48,81.09,0.9089,49.1,95.3,97.7,sim,Colab (Modelo2_S1_enxuto.ipynb),features antigas; previsao desalinhada
+2026-09-29,1,M2 enxuto,Modelo 2 original,V8 FINAL_NN,municipal,5.49,64.64,41.96,0.5575,84.8,96.3,97.7,sim,Colab,
+2026-09-29,1,M2 v2,Features SHAP corrigido + previsao alinhada + early stopping + MinT,V8 FINAL_NN_v2,estadual,559.77,1500.95,62.01,0.9714,62.6,98.2,99.9,sim,Colab (Modelo2_v2.ipynb),SECA parou na epoca 171; PICO na 92
+2026-09-29,1,M2 v2,Features SHAP corrigido + previsao alinhada + early stopping + MinT,V8 FINAL_NN_v2,municipal,4.42,40.11,44.96,0.8177,83.9,96.0,97.6,sim,Colab,
+2026-09-29,1,M2 v2 sem MinT,Soma simples das medianas municipais,V8 FINAL_NN_v2,estadual,829.19,2598.60,64.75,0.98,60.36,98.22,99.85,nao,local (_analise_v2/diagnostico_agregacao.py),pesos da v2 rodados em CPU
+2026-09-29,1,M2 v2 recalibrado,Fator de vies nacional por regime (validacao) + soma estadual NB,V8 FINAL_NN_v2,estadual,292.67,776.86,45.45,0.9750,38.8,71.8,78.6,nao,Colab (celula_refazer_previsao.py),
+2026-09-29,1,M2 v2 recalibrado,Fator de vies nacional por regime (validacao) + soma estadual NB,V8 FINAL_NN_v2,municipal,3.32,41.86,37.71,0.7653,85.8,95.5,97.1,nao,Colab,
+2026-09-29,1,M2 v2 + pos v3,Fator por UF encolhido + inflacao da variancia estadual (validacao),V8 FINAL_NN_v2,estadual,243.01,643.11,40.91,0.9839,50.1,82.9,87.9,nao,local (Modelo2_v3 com SO_POS_PROCESSAMENTO),escolhido entre 6 variantes comparadas no teste: levemente otimista
+2026-09-29,1,M2 v2 + pos v3,Fator por UF encolhido + inflacao da variancia estadual (validacao),V8 FINAL_NN_v2,municipal,3.28,41.39,37.10,0.7970,85.6,95.4,97.0,nao,local,
+2026-09-29,1,persistencia,Repete a semana anterior,V8,estadual,184.78,599.80,24.80,0.98,,,,nao,local,1a semana do teste usa a EW40
+2026-09-28,1,persistencia,Repete a semana anterior,V4 (antigo),estadual,197.34,616,26.5,0.9835,,,,nao,calculado no mapa do projeto,
+2026-09-28,1,persistencia,Repete a semana anterior,V4 (antigo),municipal,1.75,14.5,37.4,0.973,,,,nao,calculado no mapa do projeto,
+2026-09-28,1,climatologia,Mediana por semana epidemiologica 2015-22,V4 (antigo),estadual,772.59,2683,78.3,0.767,,,,nao,calculado no mapa do projeto,nao usa nada do teste
+2026-09-28,1,climatologia,Mediana por semana epidemiologica 2015-22,V4 (antigo),municipal,4.71,58.4,50.3,0.343,,,,nao,calculado no mapa do projeto,
+2026-09-29,1,M2 v3,Losses equilibradas + peso fora do regime + pos v3 (ponto = mediana da NB inflada),V8 FINAL_NN_v2,estadual,318.10,818.63,84.21,0.9740,42.0,87.7,91.2,nao,Colab (Modelo2_v3.ipynb),SECA k=48 colapsou a mediana estadual no inicio e fim da temporada
+2026-09-29,1,M2 v3,Losses equilibradas + peso fora do regime + pos v3,V8 FINAL_NN_v2,municipal,2.93,33.99,35.73,0.8433,85.9,96.3,97.8,nao,Colab,melhor municipal ate agora
+2026-09-29,1,M2 v3.1,Pesos da v3; ponto estadual = mediana sem inflacao; intervalos = uniao com e sem inflacao,V8 FINAL_NN_v2,estadual,282.17,800.82,42.32,0.9752,54.7,87.6,91.1,nao,local (_analise_v3/teste_pos_v31.py),reproduz o CSV do Colab da v3 (MAE entre os dois 4.6); falta confirmar no Colab
+2026-09-29,1,M2 v3.1,Pesos da v3; ponto estadual = mediana sem inflacao,V8 FINAL_NN_v2,municipal,2.93,34.03,35.72,0.8429,85.9,96.3,97.8,nao,local,municipal nao muda na v3.1

@@ -1,0 +1,15 @@
+{
+ "MTGNN_cresc_UF": 0.7,
+ "MTGNN_misto_UF": 0.7,
+ "MTGNN_pesopop_UF": 0.8,
+ "Chronos2FT_UF": 0.7,
+ "MTGNN_escala_pp_UF": 1.0,
+ "MTGNN_fase_pp_UF": 1.0,
+ "MTGNN_fasetsf_pp_UF": 1.0,
+ "MTGNN_optuna10_UF": 1.0,
+ "MTGNN_pesopop10_UF": 1.0,
+ "MTGNN_pre_pp_UF": 1.0,
+ "MTGNN_qalto_pp_UF": 1.15,
+ "MTGNN_r2full_UF": 1.3,
+ "MTGNN_total_pp_UF": 1.15
+}

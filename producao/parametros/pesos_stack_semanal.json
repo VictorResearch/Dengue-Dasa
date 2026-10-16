@@ -1,0 +1,134 @@
+{
+ "1|entressafra": {
+  "GBM_xgb_todas_sem": 0.011,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.111,
+  "GBM_xgb_fase_L1_sem": 0.011,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.811,
+  "Chronos2FT_sem": 0.011
+ },
+ "1|intermediaria": {
+  "GBM_xgb_todas_sem": 0.311,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.211,
+  "GBM_xgb_fase_L1_sem": 0.011,
+  "MTGNN_cresc_escala_sem": 0.111,
+  "GBM_xgb_optuna_sem": 0.111,
+  "Chronos2FT_sem": 0.211
+ },
+ "1|alta (pico)": {
+  "GBM_xgb_todas_sem": 0.211,
+  "ARIMA_Fourier_sem": 0.311,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.011,
+  "GBM_xgb_fase_L1_sem": 0.011,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.311,
+  "Chronos2FT_sem": 0.111
+ },
+ "2|entressafra": {
+  "GBM_xgb_todas_sem": 0.011,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.111,
+  "GBM_xgb_fase_L1_sem": 0.011,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.611,
+  "Chronos2FT_sem": 0.211
+ },
+ "2|intermediaria": {
+  "GBM_xgb_todas_sem": 0.411,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.111,
+  "GBM_xgb_fase_L1_sem": 0.111,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.111,
+  "Chronos2FT_sem": 0.211
+ },
+ "2|alta (pico)": {
+  "GBM_xgb_todas_sem": 0.011,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.011,
+  "GBM_xgb_fase_L1_sem": 0.111,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.511,
+  "Chronos2FT_sem": 0.311
+ },
+ "3|entressafra": {
+  "GBM_xgb_todas_sem": 0.011,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.111,
+  "GBM_xgb_fase_L1_sem": 0.111,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.411,
+  "Chronos2FT_sem": 0.311
+ },
+ "3|intermediaria": {
+  "GBM_xgb_todas_sem": 0.111,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.111,
+  "GBM_xgb_fase_L1_sem": 0.211,
+  "MTGNN_cresc_escala_sem": 0.111,
+  "GBM_xgb_optuna_sem": 0.011,
+  "Chronos2FT_sem": 0.411
+ },
+ "3|alta (pico)": {
+  "GBM_xgb_todas_sem": 0.011,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.011,
+  "GBM_xgb_fase_L1_sem": 0.211,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.211,
+  "Chronos2FT_sem": 0.511
+ },
+ "4|entressafra": {
+  "GBM_xgb_todas_sem": 0.011,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.111,
+  "GBM_xgb_fase_L1_sem": 0.111,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.311,
+  "Chronos2FT_sem": 0.411
+ },
+ "4|intermediaria": {
+  "GBM_xgb_todas_sem": 0.011,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.011,
+  "GBM_xgb_fase_L1_sem": 0.311,
+  "MTGNN_cresc_escala_sem": 0.111,
+  "GBM_xgb_optuna_sem": 0.011,
+  "Chronos2FT_sem": 0.511
+ },
+ "4|alta (pico)": {
+  "GBM_xgb_todas_sem": 0.011,
+  "ARIMA_Fourier_sem": 0.011,
+  "MTGNN_cresc_sem": 0.011,
+  "GBM_xgb_fase_sem": 0.011,
+  "GBM_xgb_tsf_sem": 0.011,
+  "GBM_xgb_fase_L1_sem": 0.311,
+  "MTGNN_cresc_escala_sem": 0.011,
+  "GBM_xgb_optuna_sem": 0.111,
+  "Chronos2FT_sem": 0.511
+ }
+}

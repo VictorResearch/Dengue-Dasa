@@ -1,0 +1,374 @@
+<title>Dengue: modelos por dentro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: relatório de uma coluna (~70ch) com tabelas largas roláveis; destaque âmbar só para o vencedor de cada tabela */
+:root{
+  --bg:#f7f8f6; --surface:#ffffff; --fg:#1d2624; --muted:#5b6865; --line:#d9dfdc;
+  --accent:#0d6457; --accent-soft:#e3f0ec; --win:#b4680b; --win-soft:#fbf0de; --bad:#a3392f;
+  --display:"Literata", Georgia, "Times New Roman", serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121816; --surface:#1a2220; --fg:#e4ebe8; --muted:#9aa8a4; --line:#2f3b38;
+  --accent:#5cc2ad; --accent-soft:#1d3430; --win:#f0b25a; --win-soft:#3a2c17; --bad:#ef8a7f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121816; --surface:#1a2220; --fg:#e4ebe8; --muted:#9aa8a4; --line:#2f3b38;
+  --accent:#5cc2ad; --accent-soft:#1d3430; --win:#f0b25a; --win-soft:#3a2c17; --bad:#ef8a7f; color-scheme:dark}
+body{background:var(--bg); color:var(--fg); font-family:var(--body); font-size:16px; line-height:1.6}
+.wrap{max-width:860px; margin:0 auto; padding-inline:20px; padding-block:40px 72px; display:flex; flex-direction:column; gap:44px}
+header{display:flex; flex-direction:column; gap:12px; border-bottom:1px solid var(--line); padding-bottom:28px}
+.eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+h1{font-family:var(--display); font-weight:650; font-size:clamp(28px,4.6vw,40px); line-height:1.15; margin:0; text-wrap:balance}
+h2{font-family:var(--display); font-weight:650; font-size:24px; line-height:1.25; margin:0 0 4px; text-wrap:balance}
+h3{font-size:16px; font-weight:600; margin:0}
+p{margin:0; max-width:68ch}
+section{display:flex; flex-direction:column; gap:16px; min-width:0}
+.lead{font-size:18px; color:var(--muted)}
+.facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px}
+.fact{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:4px}
+.fact b{font-family:var(--mono); font-size:26px; font-weight:500; color:var(--accent); font-variant-numeric:tabular-nums}
+.fact span{font-size:14px; color:var(--muted)}
+.tw{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:14px; min-width:640px}
+th,td{padding:9px 12px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap}
+th{font-weight:600; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; background:var(--accent-soft)}
+td{font-family:var(--mono); font-variant-numeric:tabular-nums}
+td:first-child,th:first-child{text-align:left; font-family:var(--body)}
+tr:last-child td{border-bottom:none}
+tr.win td{background:var(--win-soft)} tr.win td:first-child{font-weight:600}
+tr.ref td{color:var(--muted)}
+tr.sep td{border-top:2px solid var(--line)}
+.note{font-size:13px; color:var(--muted)}
+dl{display:grid; grid-template-columns:minmax(120px,170px) 1fr; gap:10px 18px; margin:0}
+dt{font-weight:600} dd{margin:0; color:var(--fg); min-width:0}
+.models{display:flex; flex-direction:column; gap:14px}
+.model{border-left:3px solid var(--accent); padding:2px 0 2px 14px; display:flex; flex-direction:column; gap:4px}
+.model .tag{font-family:var(--mono); font-size:12px; color:var(--muted)}
+.bars{display:flex; flex-direction:column; gap:8px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px}
+.bar{display:grid; grid-template-columns:minmax(120px,190px) 1fr; gap:12px; align-items:center; font-size:14px}
+.track{position:relative; height:22px}
+.fill{position:absolute; inset:0 auto 0 0; background:var(--accent); border-radius:3px}
+.fill.them{background:var(--bad)} .fill.ref{background:var(--muted); opacity:.55}
+.val{position:absolute; top:1px; font-family:var(--mono); font-size:12.5px; padding-left:6px; color:var(--fg); white-space:nowrap}
+.axis{display:grid; grid-template-columns:minmax(120px,190px) 1fr; gap:12px; font-family:var(--mono); font-size:11px; color:var(--muted)}
+.axis div:last-child{display:flex; justify-content:space-between}
+ul{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px; max-width:70ch}
+.cmp td{white-space:normal; text-align:left; font-family:var(--body); vertical-align:top; min-width:200px}
+@media (max-width:560px){ dl{grid-template-columns:1fr} dt{margin-top:6px} .bar,.axis{grid-template-columns:100px 1fr} }
+@media (prefers-reduced-motion:no-preference){ .fill{transition:width .4s ease} }
+</style>
+<style>
+.pill{display:inline-block; font-family:var(--mono); font-size:11.5px; padding:2px 8px; border-radius:999px; border:1px solid currentColor; white-space:nowrap}
+.pill.ok{color:var(--accent)} .pill.part{color:var(--win)} .pill.no{color:var(--bad)}
+td .pill{font-family:var(--mono)}
+.cmp td:nth-child(n+3){min-width:120px}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px}
+.box{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:8px; min-width:0}
+.box h3{font-family:var(--display); font-size:18px}
+.box .tag{font-family:var(--mono); font-size:12px; color:var(--muted)}
+</style>
+<style>
+figure{margin:0; display:flex; flex-direction:column; gap:8px; min-width:0}
+figure svg{width:100%; height:auto; max-width:100%; display:block; color:var(--fg)}
+figcaption{font-size:13px; color:var(--muted); max-width:72ch}
+.fig{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:14px; overflow-x:auto}
+.fig svg{min-width:560px}
+.lay{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:18px}
+@media (max-width:760px){.lay{grid-template-columns:1fr}}
+.kv{display:flex; flex-direction:column; gap:6px; font-size:15px}
+.kv b{font-weight:600}
+.call{border-left:3px solid var(--win); background:var(--win-soft); padding:12px 16px; border-radius:0 6px 6px 0; display:flex; flex-direction:column; gap:6px}
+.vt td{white-space:normal; text-align:left; font-family:var(--body); vertical-align:top; font-size:13.5px}
+.vt td:first-child{min-width:150px} .vt td:nth-child(2){min-width:170px} .vt td:nth-child(3){min-width:230px} .vt td:nth-child(n+4){min-width:70px; text-align:center}
+.vt td:last-child{min-width:240px; text-align:left}
+.y{color:var(--accent); font-weight:600} .n{color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Dengue · 26 UFs · por dentro dos modelos</div>
+  <h1>Por que a temporada não vê o pico de 2024, e como fazê-la ver</h1>
+  <p class="lead">Leitura dos gráficos por estado, o esquema de cada modelo campeão, as variáveis de entrada com a fonte de cada uma e uma proposta de modelo de temporada com detector de anos epidêmicos.</p>
+</header>
+
+<section>
+  <h2>1 · O que os gráficos mostram</h2>
+  <p>Você está certo. O semanal acompanha muito bem, e a temporada falha no tamanho dos anos epidêmicos. O formato e a época do pico saem razoáveis. O que a temporada erra é a <b>altura</b>.</p>
+  <div class="tw"><table>
+    <tr><th>Temporada 2023/24</th><th>Casos reais</th><th>Melhor geral (ENS_grafos3_λ)</th><th>% do real</th><th>Melhor no pico (ENS_stack_UF)</th><th>BB oficial</th></tr>
+    <tr><td>Brasil</td><td>6.700.498</td><td>735.757</td><td>11%</td><td>998.166</td><td>720.103</td></tr>
+    <tr><td>SP</td><td>2.196.334</td><td>210.290</td><td>10%</td><td>219.913</td><td>193.833</td></tr>
+    <tr><td>MG</td><td>1.780.540</td><td>117.516</td><td>7%</td><td>130.753</td><td>135.853</td></tr>
+    <tr><td>PR</td><td>672.998</td><td>53.767</td><td>8%</td><td>122.516</td><td>56.513</td></tr>
+    <tr><td>SC</td><td>367.460</td><td>8.321</td><td>2%</td><td>71.063</td><td>9.578</td></tr>
+    <tr><td>RS</td><td>222.712</td><td>4.389</td><td>2%</td><td>44.450</td><td>5.670</td></tr>
+    <tr><td>DF</td><td>293.629</td><td>26.412</td><td>9%</td><td>30.884</td><td>16.173</td></tr>
+    <tr class="sep"><td>CE (ano fraco)</td><td>13.409</td><td>25.841</td><td>193%</td><td>31.152</td><td>25.041</td></tr>
+  </table></div>
+  <ul>
+    <li><b>Os modelos de temporada desenham uma temporada típica de cada estado.</b> Em 2023/24 previram de 2% a 10% do real no Sul e no Sudeste. No Ceará, onde a dengue vem caindo, previram o dobro do que houve.</li>
+    <li><b>A época está certa.</b> Em PR e MG, o pico previsto cai entre março e abril, como o real. Em 2024 a subida começou mais cedo (janeiro), e isso nenhum modelo de temporada pegou.</li>
+    <li><b>Os modelos-base erram do mesmo jeito.</b> O BB oficial e as equipes do desafio também previram uma temporada comum para 2023/24. O problema é estrutural, não de ajuste fino.</li>
+    <li><b>Em 2024/25 a faixa de 90% ficou enorme</b> (Brasil até 300 mil casos/semana). É a calibração “aprendendo” com 2024: depois de errar para baixo, ela alarga tudo. Isso protege, mas não informa.</li>
+  </ul>
+
+  <figure class="fig">
+    <svg viewBox="0 0 760 250" role="img" aria-label="O modelo semanal prevê poucas semanas a partir da curva já observada; o de temporada prevê de 16 a 68 semanas a partir de junho, quando a curva ainda não começou.">
+      <defs><marker id="a1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+      <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--win)"/></marker></defs>
+      <line x1="40" y1="200" x2="730" y2="200" stroke="currentColor" stroke-opacity=".4"/>
+      <path d="M40,195 C120,195 160,193 220,190 C300,186 340,170 400,120 C440,70 470,40 500,45 C540,52 560,140 600,185 C640,196 690,197 730,197" fill="none" stroke="currentColor" stroke-width="2"/>
+      <g font-size="12" fill="currentColor" text-anchor="middle">
+        <text x="70" y="220">jun (SE25)</text><text x="230" y="220">out (SE41)</text><text x="400" y="220">jan</text><text x="500" y="220">mar–abr</text><text x="690" y="220">set (SE40)</text>
+      </g>
+      <line x1="70" y1="30" x2="70" y2="200" stroke-dasharray="4 4" style="stroke:var(--win)"/>
+      <text x="76" y="186" font-size="12" style="fill:var(--win)">temporada prevê daqui</text>
+      <line x1="80" y1="30" x2="700" y2="30" style="stroke:var(--win)" stroke-width="2" marker-end="url(#a2)"/>
+      <text x="390" y="22" font-size="12" text-anchor="middle" style="fill:var(--win)">16 a 68 semanas à frente, sem ver a subida</text>
+      <circle cx="420" cy="98" r="5" style="fill:var(--accent)"/>
+      <line x1="426" y1="96" x2="470" y2="62" style="stroke:var(--accent)" stroke-width="2" marker-end="url(#a1)"/>
+      <text x="405" y="86" font-size="12" text-anchor="end" style="fill:var(--accent)">semanal: já viu a curva até aqui</text>
+      <text x="476" y="84" font-size="12" style="fill:var(--accent)">1–4 semanas</text>
+      <text x="70" y="244" font-size="12" fill="currentColor" fill-opacity=".7">em junho só existe a “brasa” do inverno: casos fora de época, espalhamento, El Niño começando</text>
+    </svg>
+    <figcaption>O semanal decide com a curva na mão; a temporada decide antes de a curva existir. Para acertar o tamanho, ela precisa de sinais que já existam em junho.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>2 · Os campeões por dentro</h2>
+  <h3>Semanal: ENS_GBM_ARIMA_MTGNNcresc_sem (1 semana) e ENS_stack_sem (2–4 semanas)</h3>
+  <figure class="fig">
+    <svg viewBox="0 0 760 300" role="img" aria-label="Três modelos semanais independentes geram 9 quantis cada; a mediana de cada quantil forma a previsão de 1 semana. Para 2 a 4 semanas, 12 modelos são combinados com pesos que mudam com a antecedência e a fase.">
+      <defs><marker id="b1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <g font-size="12" fill="currentColor">
+        <rect x="10" y="20" width="200" height="56" rx="5" fill="none" stroke="currentColor"/>
+        <text x="20" y="42" font-weight="600">GBM XGBoost</text><text x="20" y="62" fill-opacity=".75">dezenas de variáveis · contexto</text>
+        <rect x="10" y="96" width="200" height="56" rx="5" fill="none" stroke="currentColor"/>
+        <text x="20" y="118" font-weight="600">ARIMA + ciclo anual</text><text x="20" y="138" fill-opacity=".75">só casos · segue a inércia</text>
+        <rect x="10" y="172" width="200" height="56" rx="5" fill="none" stroke="currentColor"/>
+        <text x="20" y="194" font-weight="600">MTGNN (crescimento)</text><text x="20" y="214" fill-opacity=".75">só casos + rede de estados</text>
+        <line x1="210" y1="48" x2="300" y2="118" stroke="currentColor" marker-end="url(#b1)"/>
+        <line x1="210" y1="124" x2="300" y2="124" stroke="currentColor" marker-end="url(#b1)"/>
+        <line x1="210" y1="200" x2="300" y2="130" stroke="currentColor" marker-end="url(#b1)"/>
+        <text x="232" y="74" fill-opacity=".75">9 quantis</text>
+        <rect x="302" y="96" width="170" height="56" rx="5" style="fill:var(--accent-soft);stroke:var(--accent)"/>
+        <text x="314" y="118" font-weight="600">mediana por quantil</text><text x="314" y="138" fill-opacity=".75">q2,5% … q97,5%</text>
+        <line x1="472" y1="124" x2="560" y2="124" stroke="currentColor" marker-end="url(#b1)"/>
+        <text x="566" y="118" font-weight="600">1 semana à frente</text><text x="566" y="136" fill-opacity=".75">WAPE 12% · IC90 92%</text>
+        <rect x="10" y="250" width="200" height="40" rx="5" fill="none" stroke="currentColor" stroke-dasharray="4 3"/>
+        <text x="20" y="275">+ 9 variantes da rodada 2</text>
+        <line x1="210" y1="270" x2="300" y2="270" stroke="currentColor" marker-end="url(#b1)"/>
+        <rect x="302" y="246" width="170" height="48" rx="5" style="fill:var(--win-soft);stroke:var(--win)"/>
+        <text x="314" y="266" font-weight="600">pesos por balde</text><text x="314" y="284" fill-opacity=".75">antecedência × fase</text>
+        <line x1="472" y1="270" x2="560" y2="270" stroke="currentColor" marker-end="url(#b1)"/>
+        <text x="566" y="264" font-weight="600">2–4 semanas (ENS_stack)</text><text x="566" y="282" fill-opacity=".75">WAPE 17–27%</text>
+      </g>
+    </svg>
+    <figcaption>Os três membros erram em momentos diferentes. O GBM lê vizinhos e clima, o ARIMA segue a própria série e o MTGNN lê a propagação entre estados. A mediana de cada quantil corta o erro de quem destoa. O ENS_stack aprendeu, em 2018–2021, quanto confiar em cada modelo conforme a antecedência (1–4 semanas) e a fase na origem (entressafra, intermediária ou alta).</figcaption>
+  </figure>
+
+  <div class="lay">
+    <div class="kv"><b>GBM XGBoost (árvores quantílicas)</b>
+      <p>Centenas de árvores de decisão em sequência. Cada árvore corrige o erro das anteriores. O alvo é o <b>crescimento</b> em log (quanto a incidência vai subir ou cair), não a contagem, e por isso consegue prever valores acima do histórico. Um modelo prevê os 9 quantis de uma vez.</p>
+      <p><b>Bom para:</b> combinar muitas variáveis heterogêneas e capturar limiares (por exemplo, “chuva alta e calor juntos”). <b>Como mudar:</b> profundidade, taxa de aprendizado e número de árvores (o Optuna já fez isso); variáveis novas entram como colunas; pesos por linha mudam o foco (pico).</p></div>
+    <div class="kv"><b>ARIMA(2,0,1) com ciclo anual</b>
+      <p>Duas semanas de memória (AR2), um termo de choque (MA1) e senos e cossenos com período de 52 semanas. É ajustado uma vez por temporada e atualizado a cada semana pelo filtro de Kalman, sem reajustar.</p>
+      <p><b>Bom para:</b> o valor central de curto prazo (MAE 252, o menor). <b>Fraco em:</b> viradas bruscas e horizontes longos, porque volta ao ciclo médio. <b>Como mudar:</b> ordens (p, q), número de harmônicos e regressores externos (testamos fase/Rt: não ajudou).</p></div>
+  </div>
+
+  <h3>Temporada: ENS_grafos3_λ</h3>
+  <figure class="fig">
+    <svg viewBox="0 0 760 270" role="img" aria-label="Quatro redes de grafo recebem a mesma janela de 104 semanas e as mesmas variáveis de junho; cada uma prevê o desvio em relação à curva típica do estado; a mediana das quatro, somada à curva típica, dá as 68 semanas.">
+      <defs><marker id="c1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <g font-size="12" fill="currentColor">
+        <rect x="10" y="40" width="170" height="70" rx="5" fill="none" stroke="currentColor"/>
+        <text x="20" y="62" font-weight="600">janela de 104 semanas</text><text x="20" y="80" fill-opacity=".75">log incidência, clima</text><text x="20" y="96" fill-opacity=".75">observado, ENSO, calendário</text>
+        <rect x="10" y="130" width="170" height="70" rx="5" fill="none" stroke="currentColor"/>
+        <text x="20" y="152" font-weight="600">retrato de junho (11)</text><text x="20" y="170" fill-opacity=".75">taxas de ataque 1–3 anos,</text><text x="20" y="186" fill-opacity=".75">vizinhos, tendência, pop.</text>
+        <g>
+          <rect x="230" y="20" width="160" height="40" rx="5" fill="none" stroke="currentColor"/><text x="240" y="44">MTGNN_UF +λ</text>
+          <rect x="230" y="72" width="160" height="40" rx="5" fill="none" stroke="currentColor"/><text x="240" y="96">A3TGCN_UF +λ</text>
+          <rect x="230" y="124" width="160" height="40" rx="5" fill="none" stroke="currentColor"/><text x="240" y="148">GCNGRU_UF +λ</text>
+          <rect x="230" y="176" width="160" height="40" rx="5" fill="none" stroke="currentColor"/><text x="240" y="200">MTGNN_optuna10 (novo)</text>
+        </g>
+        <line x1="180" y1="120" x2="226" y2="120" stroke="currentColor" marker-end="url(#c1)"/>
+        <line x1="390" y1="40" x2="440" y2="110" stroke="currentColor" marker-end="url(#c1)"/>
+        <line x1="390" y1="92" x2="440" y2="114" stroke="currentColor" marker-end="url(#c1)"/>
+        <line x1="390" y1="144" x2="440" y2="120" stroke="currentColor" marker-end="url(#c1)"/>
+        <line x1="390" y1="196" x2="440" y2="124" stroke="currentColor" marker-end="url(#c1)"/>
+        <rect x="442" y="92" width="120" height="50" rx="5" style="fill:var(--accent-soft);stroke:var(--accent)"/>
+        <text x="452" y="114" font-weight="600">mediana</text><text x="452" y="132" fill-opacity=".75">desvio × 9 quantis</text>
+        <line x1="562" y1="117" x2="600" y2="117" stroke="currentColor" marker-end="url(#c1)"/>
+        <rect x="602" y="80" width="150" height="74" rx="5" style="fill:var(--win-soft);stroke:var(--win)"/>
+        <text x="612" y="102" font-weight="600">+ curva típica</text><text x="612" y="120" fill-opacity=".75">da UF (âncora)</text><text x="612" y="138" fill-opacity=".75">= 68 semanas</text>
+        <text x="230" y="250" fill-opacity=".8">λ = alarga ou estreita a faixa (escolhido em 2018–2021). Nenhuma entrada olha para depois de junho.</text>
+      </g>
+    </svg>
+    <figcaption>Aqui está a causa principal do achatamento. Cada rede prevê o <b>desvio em relação à curva típica do estado</b>. Desvios grandes são raros no treino, a perda quantílica é robusta a eles e a mediana de 4 redes encolhe ainda mais. Resultado: a previsão gruda na temporada típica. Funciona muito bem em anos normais e na entressafra, e é por isso que o modelo vence o BB em 20 de 26 estados.</figcaption>
+  </figure>
+
+  <h3>As camadas das redes</h3>
+  <div class="lay">
+    <figure class="fig">
+      <svg viewBox="0 0 380 470" role="img" aria-label="Camadas do MTGNN de cima para baixo: entrada, projeção, cinco blocos de convolução temporal dilatada com propagação no grafo aprendido, cabeça com variáveis de junho e embeddings, e saída de 68 semanas por 9 quantis.">
+        <defs><marker id="d1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <g font-size="12" fill="currentColor">
+          <text x="10" y="18" font-weight="600" font-size="13">MTGNN</text>
+          <rect x="10" y="30" width="360" height="44" rx="5" fill="none" stroke="currentColor"/><text x="20" y="50" font-weight="600">entrada</text><text x="20" y="66" fill-opacity=".75">26 estados × 104 semanas × 8 sinais</text>
+          <line x1="190" y1="74" x2="190" y2="88" stroke="currentColor" marker-end="url(#d1)"/>
+          <rect x="10" y="90" width="360" height="40" rx="5" fill="none" stroke="currentColor"/><text x="20" y="114">projeção 1×1: 8 sinais → 48 canais</text>
+          <line x1="190" y1="130" x2="190" y2="144" stroke="currentColor" marker-end="url(#d1)"/>
+          <rect x="10" y="146" width="360" height="150" rx="5" style="fill:var(--accent-soft);stroke:var(--accent)"/>
+          <text x="20" y="166" font-weight="600">5 blocos (dilatação 1, 2, 4, 8, 16)</text>
+          <text x="20" y="188">① convolução temporal dilatada com porta</text><text x="36" y="204" fill-opacity=".75">tanh × sigmoid: o que passa adiante</text>
+          <text x="20" y="226">② mix-hop no grafo: 2 saltos entre estados</text><text x="36" y="242" fill-opacity=".75">grafo = fronteiras + 4 ligações aprendidas</text>
+          <text x="20" y="264">③ soma residual</text><text x="36" y="280" fill-opacity=".75">alcance acumulado de até 32 semanas</text>
+          <line x1="190" y1="296" x2="190" y2="310" stroke="currentColor" marker-end="url(#d1)"/>
+          <rect x="10" y="312" width="360" height="60" rx="5" fill="none" stroke="currentColor"/><text x="20" y="332" font-weight="600">cabeça</text><text x="20" y="350" fill-opacity=".75">+ retrato de junho + “quem é o estado”</text><text x="20" y="366" fill-opacity=".75">+ “que semana do ano é”</text>
+          <line x1="190" y1="372" x2="190" y2="386" stroke="currentColor" marker-end="url(#d1)"/>
+          <rect x="10" y="388" width="360" height="40" rx="5" fill="none" stroke="currentColor"/><text x="20" y="412">2 camadas densas → 68 semanas × 9 quantis</text>
+          <text x="10" y="456" fill-opacity=".75">3 sementes; perda quantílica (pinball)</text>
+        </g>
+      </svg>
+      <figcaption><b>Bom para:</b> aprender sozinho quem contamina quem; o grafo de fronteiras recebe 4 ligações extras por estado, aprendidas nos dados. <b>Como mudar:</b> número de vizinhos aprendidos (k), canais (d), dilatações (alcance no tempo), sementes e o alvo (desvio da curva típica ou crescimento).</figcaption>
+    </figure>
+    <figure class="fig">
+      <svg viewBox="0 0 380 470" role="img" aria-label="Camadas do A3T-GCN e do GCN-GRU: entrada, uma GRU por estado, atenção sobre as semanas (só no A3T-GCN), duas convoluções no grafo de fronteiras, cabeça e saída.">
+        <defs><marker id="e1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+        <g font-size="12" fill="currentColor">
+          <text x="10" y="18" font-weight="600" font-size="13">A3T-GCN e GCN-GRU</text>
+          <rect x="10" y="30" width="360" height="44" rx="5" fill="none" stroke="currentColor"/><text x="20" y="50" font-weight="600">entrada</text><text x="20" y="66" fill-opacity=".75">mesma janela do MTGNN</text>
+          <line x1="190" y1="74" x2="190" y2="88" stroke="currentColor" marker-end="url(#e1)"/>
+          <rect x="10" y="90" width="360" height="56" rx="5" fill="none" stroke="currentColor"/><text x="20" y="110" font-weight="600">GRU por estado (48 unidades)</text><text x="20" y="128" fill-opacity=".75">lê as 104 semanas em ordem; portas decidem</text><text x="20" y="142" fill-opacity=".75">o que lembrar e o que esquecer</text>
+          <line x1="190" y1="146" x2="190" y2="160" stroke="currentColor" marker-end="url(#e1)"/>
+          <rect x="10" y="162" width="360" height="56" rx="5" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="20" y="182" font-weight="600">atenção temporal (só A3T-GCN)</text><text x="20" y="200" fill-opacity=".75">pesa semanas distantes, como o pico do</text><text x="20" y="214" fill-opacity=".75">ano anterior; o GCN-GRU usa só a última</text>
+          <line x1="190" y1="218" x2="190" y2="232" stroke="currentColor" marker-end="url(#e1)"/>
+          <rect x="10" y="234" width="360" height="56" rx="5" fill="none" stroke="currentColor"/><text x="20" y="254" font-weight="600">2 convoluções no grafo de fronteiras</text><text x="20" y="272" fill-opacity=".75">cada estado mistura o seu estado oculto</text><text x="20" y="286" fill-opacity=".75">com o dos vizinhos (fixo, não aprendido)</text>
+          <line x1="190" y1="290" x2="190" y2="304" stroke="currentColor" marker-end="url(#e1)"/>
+          <rect x="10" y="306" width="360" height="44" rx="5" fill="none" stroke="currentColor"/><text x="20" y="326" font-weight="600">cabeça</text><text x="20" y="342" fill-opacity=".75">igual à do MTGNN</text>
+          <line x1="190" y1="350" x2="190" y2="364" stroke="currentColor" marker-end="url(#e1)"/>
+          <rect x="10" y="366" width="360" height="40" rx="5" fill="none" stroke="currentColor"/><text x="20" y="390">68 semanas × 9 quantis</text>
+        </g>
+      </svg>
+      <figcaption><b>Bom para:</b> memória longa (GRU) e o “eco” do ano anterior (atenção). Como o grafo é fixo, é mais estável que o MTGNN, e por isso a combinação dos três funciona. <b>Como mudar:</b> tamanho da GRU, número de convoluções no grafo, grafo com peso pelo contato de fronteira (w1c) ou pela mobilidade.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <h2>3 · As variáveis, a fonte e o uso de cada uma</h2>
+  <p>Todos os brutos vêm do FTP do 3º desafio IMDC/Mosqlimate (13 arquivos, baixados em 2026) e foram agregados por estado com regras próprias: contagens somadas, taxas recalculadas, clima ponderado pela população. <span class="y">●</span> = usada; <span class="n">○</span> = não usada.</p>
+  <div class="tw"><table class="vt">
+    <tr><th>Variável</th><th>Fonte (arquivo Mosqlimate)</th><th>Como o dado funciona</th><th>Semanal GBM</th><th>Semanal ARIMA</th><th>Temporada redes</th><th>Alternativas em outros bancos</th></tr>
+    <tr><td><b>Casos prováveis de dengue</b></td><td><code>dengue.csv</code> · SINAN, via InfoDengue</td><td>Notificações por município e semana de início dos sintomas. As últimas semanas chegam incompletas (atraso de notificação) e são revisadas.</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td>Microdados SINAN no DATASUS ou na Base dos Dados (BigQuery); API InfoDengue (traz Rt e nível de alerta); <b>positividade de NS1/IgM nos laboratórios da própria DASA</b>, que chega antes do SINAN</td></tr>
+    <tr><td><b>Vizinhos, imunidade, taxa de ataque, espalhamento</b></td><td>Derivadas de <code>dengue.csv</code> + <code>shape_*.gpkg</code></td><td>Incidência dos estados vizinhos, casos acumulados nos últimos 1–3 anos (quem já pegou), % de municípios com casos.</td><td class="y">●</td><td class="n">○</td><td class="y">● (sem o espalhamento)</td><td>Sorotipo circulante (LACENs, boletins do MS); vacinação Qdenga (SI-PNI); mobilidade entre estados (IBGE REGIC, voos ANAC)</td></tr>
+    <tr><td><b>Clima observado</b> (temperatura mín/méd/máx, chuva, umidade, pressão, dias de chuva, amplitude)</td><td><code>climate.csv</code> · reanálise ERA5 (Copernicus) agregada por município</td><td>Valores semanais modelados a partir de satélites e estações, sem buracos. Usamos anomalias em relação à média da mesma semana, nas últimas 12 e 26 semanas.</td><td class="y">●</td><td class="n">○</td><td class="y">● até junho</td><td>Estações INMET (BDMEP); chuva CHIRPS ou MERGE/CPTEC; NASA POWER; ERA5-Land direto do Copernicus</td></tr>
+    <tr><td><b>Previsão climática sazonal</b> (temperatura, umidade, chuva)</td><td><code>forecasting_climate.csv</code> · ECMWF SEAS5</td><td>Média mensal prevista para 1 a 6 meses à frente, emitida todo mês. Em junho, cobre até dezembro, ou seja, o começo da temporada, mas não o pico de março.</td><td class="y">● (horizonte certo)</td><td class="n">○</td><td class="n">○</td><td>Outros modelos do Copernicus C3S (UKMO, Météo-France, DWD, CMCC); NMME da NOAA; previsão sazonal do CPTEC/INMET</td></tr>
+    <tr><td><b>Oscilações oceânicas</b> (ENSO, IOD, PDO)</td><td><code>ocean_climate_oscillations.csv</code> · índices da NOAA</td><td>Um valor semanal para o planeta. El Niño aquece e altera a chuva no Brasil com meses de atraso.</td><td class="y">●</td><td class="n">○</td><td class="y">● só ENSO passado</td><td><b>Previsão de ENSO para 6–9 meses</b> (pluma do IRI/NOAA CPC, BoM): é a variável “adiantada” mais barata que falta</td></tr>
+    <tr><td><b>Chikungunya</b></td><td><code>chikungunya.csv</code> · SINAN</td><td>Casos prováveis. O mesmo mosquito; indica infestação.</td><td class="y">●</td><td class="n">○</td><td class="n">○</td><td>Zika no SINAN; LIRAa e ovitrampas (índice de infestação do Aedes, municipal)</td></tr>
+    <tr><td><b>Acessos na Afya</b></td><td><code>access_afya_dengue_*.csv</code></td><td>Acessos diários a conteúdo de dengue por médicos na plataforma Afya, desde 2021.</td><td class="y">●</td><td class="n">○</td><td class="n">○</td><td>Google Trends; páginas da Wikipédia; volume de pedidos de exame da DASA</td></tr>
+    <tr><td><b>População</b></td><td><code>datasus_population_2001_2025.csv</code> · estimativas IBGE/DATASUS</td><td>População anual por município. Transforma casos em incidência e dá peso aos estados.</td><td class="y">●</td><td class="n">○</td><td class="y">●</td><td>IBGE SIDRA; Censo 2022</td></tr>
+    <tr><td><b>Clima fixo e bioma</b> (Köppen, bioma)</td><td><code>environ_vars.csv</code></td><td>Classe climática e bioma de cada município, convertidos em % da população do estado.</td><td class="y">●</td><td class="n">○</td><td class="n">○ (a rede aprende “quem é o estado”)</td><td>MapBiomas (uso do solo e urbanização); IBGE</td></tr>
+    <tr><td><b>Calendário</b></td><td>derivado da data</td><td>Seno e cosseno da semana do ano.</td><td class="y">●</td><td class="y">●</td><td class="y">●</td><td>—</td></tr>
+    <tr><td><b>Fase, Rt e tsfresh</b> (rodada 2)</td><td>derivadas dos casos</td><td>Rt pela equação de renovação, semanas desde a entressafra e 40 resumos automáticos da curva.</td><td class="y">● (variantes)</td><td class="n">○</td><td class="n">○ (testado: não ajudou)</td><td>Rt já pronto na API InfoDengue</td></tr>
+  </table></div>
+  <div class="call"><b>Resposta direta:</b> o modelo de temporada vê o clima e o ENSO só <b>até junho</b>. Não recebe nenhuma variável adiantada: nem a previsão sazonal SEAS5, nem a previsão do El Niño. A SEAS5 foi testada na temporada nas rodadas anteriores (AutoARIMAX, Chronos2_cov, DoisEstagios) e piorou ou não ajudou. Um motivo provável: em junho ela só cobre até dezembro, e o pico é em março.</div>
+</section>
+
+<section>
+  <h2>4 · Havia sinal em junho de 2023?</h2>
+  <p>Testei a sua hipótese diretamente. Para cada estado e temporada, calculei quanto a temporada ficou acima ou abaixo do típico do estado. Depois vi quais variáveis de junho se relacionam com isso, em 2012–2024.</p>
+  <div class="tw"><table>
+    <tr><th>Sinal medido na SE25 (junho)</th><th>Correlação com o tamanho da temporada</th></tr>
+    <tr class="win"><td>Casos nas últimas 4–8 semanas, comparados com o normal da UF nessa época</td><td>0,44–0,46</td></tr>
+    <tr class="win"><td>Variação do ENSO (El Niño se formando)</td><td>0,42</td></tr>
+    <tr><td>% de municípios com casos, comparado com o normal da UF</td><td>0,35</td></tr>
+    <tr><td>Casos nos vizinhos, comparados com o normal</td><td>0,31</td></tr>
+    <tr><td>PDO (oscilação do Pacífico)</td><td>−0,27</td></tr>
+    <tr><td>Casos em junho em valor absoluto (como as redes recebem hoje)</td><td>0,17</td></tr>
+    <tr><td>Previsão SEAS5 (temperatura e chuva)</td><td>−0,09 a 0,06</td></tr>
+  </table></div>
+  <p>Com esses 8 sinais, uma regressão simples, treinada <b>só com temporadas anteriores</b> a cada uma, previu o tamanho de 2023/24 com correlação de <b>0,84</b> entre os estados:</p>
+  <div class="tw"><table>
+    <tr><th>UF</th><th>Real: vezes a temporada típica</th><th>Detector simples previu</th><th>ENS_grafos3 previu</th></tr>
+    <tr><td>SC</td><td>122×</td><td>37×</td><td>≈1× (como o BB)</td></tr>
+    <tr><td>RS</td><td>110×</td><td>42×</td><td>≈1×</td></tr>
+    <tr><td>PR</td><td>20×</td><td>6,7×</td><td>≈1×</td></tr>
+    <tr><td>DF</td><td>20×</td><td>2,7×</td><td>≈1×</td></tr>
+    <tr><td>MG</td><td>17×</td><td>2,7×</td><td>≈1×</td></tr>
+    <tr><td>SP</td><td>15×</td><td>3,0×</td><td>≈1×</td></tr>
+    <tr><td>RJ</td><td>12×</td><td>3,5×</td><td>≈1×</td></tr>
+    <tr class="sep"><td>CE</td><td>0,5×</td><td>1,4×</td><td>≈2×</td></tr>
+  </table></div>
+  <p>O detector simples ainda subestima, mas aponta a direção certa e a ordem certa dos estados. Nas demais temporadas, ele quase não dá alarmes falsos: em 2024/25 previu +0,2 em log para um real de 0,0. Como alarme de “temporada grande” (mais de 2× o típico), acerta 63% dos casos, e 59% dos alarmes se confirmam.</p>
+  <p class="note">Cuidado: escolhi os 8 sinais olhando correlações calculadas com todas as temporadas, inclusive 2023. O número correto sai quando a escolha for refeita só com 2012–2021. Mesmo assim, a diferença para as redes (≈1×) é grande demais para ser só esse viés.</p>
+  <div class="call"><b>Por que as redes não usam esse sinal, se ele está nas entradas?</b> Três motivos: (1) recebem os casos de junho em valor absoluto, não comparados com o normal do estado; (2) preveem o desvio da curva típica, e desvios enormes são raros; (3) treinam com todas as semanas do ano como origem, e não aprendem que o retrato de junho define o tamanho do verão.</div>
+</section>
+
+<section>
+  <h2>5 · Modelos de pico e entressafra: o que aprendemos e a proposta</h2>
+  <h3>O que o AGCRN de seca/pico ensinou (junho de 2026, nível municipal, semanal)</h3>
+  <ul>
+    <li><b>Separar regimes ajudou no timing:</b> a correlação estadual subiu de 0,67 para 0,93. Mas o regime era definido pelo <b>calendário</b> (pico = SE47→SE25), não por um detector. Na temporada, a época quase não muda de ano para ano. O que muda é o tamanho.</li>
+    <li><b>Troca brusca entre especialistas cria saltos.</b> A correção foi treinar cada especialista também nas semanas do outro (peso 0,25), ou seja, uma troca suave.</li>
+    <li><b>Perda assimétrica distorceu:</b> o especialista de pico superestimou 3–5× no começo da temporada. Puxar a perda para cima não substitui informação.</li>
+    <li><b>O especialista de pico com atenção colapsou</b> (previsões perto de zero): há poucos anos epidêmicos por estado para treinar uma rede só de pico. A saída é juntar os estados com alvo relativo ao normal de cada um.</li>
+  </ul>
+
+  <h3>A sua teoria, ajustada ao que os dados mostram</h3>
+  <figure class="fig">
+    <svg viewBox="0 0 760 330" role="img" aria-label="Proposta: em junho, um detector usa sinais adiantados para dar a probabilidade de temporada grande e o tamanho esperado. Esses números misturam um modelo de temporada normal e um modelo de pico. A mistura é revista todo mês até outubro.">
+      <defs><marker id="f1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+      <g font-size="12" fill="currentColor">
+        <rect x="10" y="20" width="200" height="120" rx="5" fill="none" stroke="currentColor"/>
+        <text x="20" y="42" font-weight="600">sinais de junho</text>
+        <text x="20" y="62" fill-opacity=".8">casos fora de época vs normal</text>
+        <text x="20" y="80" fill-opacity=".8">espalhamento e vizinhos</text>
+        <text x="20" y="98" fill-opacity=".8">ENSO e sua previsão (6–9 m)</text>
+        <text x="20" y="116" fill-opacity=".8">suscetíveis, sorotipo novo</text>
+        <text x="20" y="134" fill-opacity=".8">SEAS5 (out–dez)</text>
+        <line x1="210" y1="80" x2="268" y2="80" stroke="currentColor" marker-end="url(#f1)"/>
+        <rect x="270" y="40" width="190" height="80" rx="5" style="fill:var(--win-soft);stroke:var(--win)"/>
+        <text x="280" y="62" font-weight="600">① detector de tamanho</text>
+        <text x="280" y="82" fill-opacity=".8">P(temporada grande)</text>
+        <text x="280" y="100" fill-opacity=".8">e multiplicador (quantis)</text>
+        <rect x="10" y="190" width="200" height="56" rx="5" fill="none" stroke="currentColor"/>
+        <text x="20" y="212" font-weight="600">② modelo normal</text><text x="20" y="230" fill-opacity=".8">ENS_grafos3 (já existe)</text>
+        <rect x="10" y="262" width="200" height="56" rx="5" fill="none" stroke="currentColor"/>
+        <text x="20" y="284" font-weight="600">③ modelo de pico</text><text x="20" y="302" fill-opacity=".8">forma dos anos epidêmicos</text>
+        <line x1="210" y1="218" x2="508" y2="218" stroke="currentColor" marker-end="url(#f1)"/>
+        <line x1="210" y1="290" x2="500" y2="234" stroke="currentColor" marker-end="url(#f1)"/>
+        <line x1="365" y1="120" x2="520" y2="196" style="stroke:var(--win)" stroke-width="2" marker-end="url(#f1)"/>
+        <text x="400" y="150" style="fill:var(--win)">pesos da mistura</text>
+        <text x="240" y="210" fill-opacity=".75">peso 1 − p</text><text x="300" y="276" fill-opacity=".75">peso p · escala</text>
+        <rect x="510" y="186" width="160" height="64" rx="5" style="fill:var(--accent-soft);stroke:var(--accent)"/>
+        <text x="520" y="208" font-weight="600">mistura de cenários</text><text x="520" y="226" fill-opacity=".8">uma faixa só, com</text><text x="520" y="242" fill-opacity=".8">cauda de cima longa</text>
+        <line x1="670" y1="218" x2="740" y2="218" stroke="currentColor" marker-end="url(#f1)"/>
+        <text x="676" y="208">68 sem.</text>
+        <path d="M590,186 C590,150 520,140 470,112" fill="none" stroke="currentColor" stroke-dasharray="4 3" marker-end="url(#f1)"/>
+        <text x="560" y="140" fill-opacity=".8">revisar todo mês</text><text x="560" y="156" fill-opacity=".8">jul → out</text>
+      </g>
+    </svg>
+    <figcaption>Igual à sua ideia em três peças, com duas mudanças. (a) Em vez de “chamar” o modelo de pico numa época, o detector dá uma <b>probabilidade e um tamanho</b>, e os dois modelos se misturam. Um alarme incerto alarga a cauda de cima sem jogar fora o cenário normal. (b) O detector age no <b>tamanho do ano inteiro</b>, porque a época do pico já é previsível; o que muda é a altura e, em anos grandes, um início mais cedo.</figcaption>
+  </figure>
+
+  <dl>
+    <dt>① Detector</dt><dd>Regressão quantílica ou GBM pequeno com uma linha por estado e temporada (~300 linhas), prevendo o log do tamanho <b>relativo ao normal do estado</b>. Sinais: casos e espalhamento de abril a junho comparados com o normal, vizinhos, ENSO observado e <b>previsto</b>, PDO, suscetíveis (anos desde a última epidemia grande), SEAS5 de out–dez. Juntar os estados resolve a falta de anos epidêmicos.</dd>
+    <dt>② Normal</dt><dd>O ENS_grafos3_λ atual, que já é ótimo na entressafra e em anos comuns.</dd>
+    <dt>③ Pico</dt><dd>A forma média dos anos grandes (do próprio estado e dos vizinhos), normalizada e escalada pelo multiplicador do detector, com início mais cedo quando o multiplicador é alto. Alternativa: o MTGNN atual com o multiplicador como entrada da cabeça.</dd>
+    <dt>Atualização</dt><dd>Repetir o detector em julho, agosto, setembro e outubro. Os casos de agosto e setembro são um sinal ainda mais forte, e isso transforma a compra única em compra escalonada.</dd>
+  </dl>
+
+  <h3>Como testaríamos (próxima rodada, sem tocar nas anteriores)</h3>
+  <ol>
+    <li>Refazer a escolha dos sinais do detector só com 2012–2021 e medir em 2022–2025 (erro do tamanho, alarmes certos e falsos).</li>
+    <li>Baixar a previsão de ENSO do IRI e o Rt do InfoDengue. Opcional: sorotipo e vacinação.</li>
+    <li>Montar a mistura ② + ③ e comparar com o ENS_grafos3 e o BB: WIS geral, erro no pico, erro no total do ano e IC90 no pico.</li>
+    <li>Versões com revisão mensal (julho a outubro) para mostrar quanto a compra escalonada ganha.</li>
+  </ol>
+</section>
+</div>

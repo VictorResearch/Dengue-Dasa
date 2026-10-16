@@ -1,0 +1,17 @@
+# Núcleo: dados, avaliação, modelos estatísticos, árvores, redes de grafo e produção
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+pyarrow>=14
+scikit-learn>=1.4
+statsmodels>=0.14
+statsforecast>=1.7
+lightgbm>=4.3
+xgboost>=2.0
+catboost>=1.2
+torch>=2.2
+matplotlib>=3.8
+tsfresh>=0.20          # variáveis tsfresh do GBM_xgb_tsf_sem (membro do campeão semanal)
+optuna>=3.6            # rodadas 2 e 6
+chronos-forecasting>=2.0   # Chronos-2 ajustado (membro do campeão semanal; GPU)
+peft>=0.13                 # LoRA do Chronos-2

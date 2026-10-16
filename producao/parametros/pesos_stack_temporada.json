@@ -1,0 +1,38 @@
+{
+ "16-29": {
+  "MTGNN_pesopop_UF+λ": 0.143,
+  "MTGNN_UF+λ": 0.043,
+  "A3TGCN_UF+λ": 0.043,
+  "GCNGRU_UF+λ": 0.043,
+  "TFT_pool_UF": 0.143,
+  "DoisEstagios_pool_UF": 0.043,
+  "MTGNN_optuna10_UF": 0.543
+ },
+ "30-42": {
+  "MTGNN_pesopop_UF+λ": 0.043,
+  "MTGNN_UF+λ": 0.043,
+  "A3TGCN_UF+λ": 0.043,
+  "GCNGRU_UF+λ": 0.043,
+  "TFT_pool_UF": 0.043,
+  "DoisEstagios_pool_UF": 0.343,
+  "MTGNN_optuna10_UF": 0.443
+ },
+ "43-55": {
+  "MTGNN_pesopop_UF+λ": 0.043,
+  "MTGNN_UF+λ": 0.043,
+  "A3TGCN_UF+λ": 0.043,
+  "GCNGRU_UF+λ": 0.043,
+  "TFT_pool_UF": 0.043,
+  "DoisEstagios_pool_UF": 0.643,
+  "MTGNN_optuna10_UF": 0.143
+ },
+ "56-68": {
+  "MTGNN_pesopop_UF+λ": 0.043,
+  "MTGNN_UF+λ": 0.043,
+  "A3TGCN_UF+λ": 0.043,
+  "GCNGRU_UF+λ": 0.043,
+  "TFT_pool_UF": 0.143,
+  "DoisEstagios_pool_UF": 0.243,
+  "MTGNN_optuna10_UF": 0.443
+ }
+}

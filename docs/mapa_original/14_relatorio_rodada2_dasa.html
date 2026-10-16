@@ -1,0 +1,252 @@
+<title>Dengue Rodada 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: relatório de uma coluna (~70ch) com tabelas largas roláveis; destaque âmbar só para o vencedor de cada tabela */
+:root{
+  --bg:#f7f8f6; --surface:#ffffff; --fg:#1d2624; --muted:#5b6865; --line:#d9dfdc;
+  --accent:#0d6457; --accent-soft:#e3f0ec; --win:#b4680b; --win-soft:#fbf0de; --bad:#a3392f;
+  --display:"Literata", Georgia, "Times New Roman", serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121816; --surface:#1a2220; --fg:#e4ebe8; --muted:#9aa8a4; --line:#2f3b38;
+  --accent:#5cc2ad; --accent-soft:#1d3430; --win:#f0b25a; --win-soft:#3a2c17; --bad:#ef8a7f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121816; --surface:#1a2220; --fg:#e4ebe8; --muted:#9aa8a4; --line:#2f3b38;
+  --accent:#5cc2ad; --accent-soft:#1d3430; --win:#f0b25a; --win-soft:#3a2c17; --bad:#ef8a7f; color-scheme:dark}
+body{background:var(--bg); color:var(--fg); font-family:var(--body); font-size:16px; line-height:1.6}
+.wrap{max-width:860px; margin:0 auto; padding-inline:20px; padding-block:40px 72px; display:flex; flex-direction:column; gap:44px}
+header{display:flex; flex-direction:column; gap:12px; border-bottom:1px solid var(--line); padding-bottom:28px}
+.eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+h1{font-family:var(--display); font-weight:650; font-size:clamp(28px,4.6vw,40px); line-height:1.15; margin:0; text-wrap:balance}
+h2{font-family:var(--display); font-weight:650; font-size:24px; line-height:1.25; margin:0 0 4px; text-wrap:balance}
+h3{font-size:16px; font-weight:600; margin:0}
+p{margin:0; max-width:68ch}
+section{display:flex; flex-direction:column; gap:16px; min-width:0}
+.lead{font-size:18px; color:var(--muted)}
+.facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px}
+.fact{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:4px}
+.fact b{font-family:var(--mono); font-size:26px; font-weight:500; color:var(--accent); font-variant-numeric:tabular-nums}
+.fact span{font-size:14px; color:var(--muted)}
+.tw{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:14px; min-width:640px}
+th,td{padding:9px 12px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap}
+th{font-weight:600; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; background:var(--accent-soft)}
+td{font-family:var(--mono); font-variant-numeric:tabular-nums}
+td:first-child,th:first-child{text-align:left; font-family:var(--body)}
+tr:last-child td{border-bottom:none}
+tr.win td{background:var(--win-soft)} tr.win td:first-child{font-weight:600}
+tr.ref td{color:var(--muted)}
+tr.sep td{border-top:2px solid var(--line)}
+.note{font-size:13px; color:var(--muted)}
+dl{display:grid; grid-template-columns:minmax(120px,170px) 1fr; gap:10px 18px; margin:0}
+dt{font-weight:600} dd{margin:0; color:var(--fg); min-width:0}
+.models{display:flex; flex-direction:column; gap:14px}
+.model{border-left:3px solid var(--accent); padding:2px 0 2px 14px; display:flex; flex-direction:column; gap:4px}
+.model .tag{font-family:var(--mono); font-size:12px; color:var(--muted)}
+.bars{display:flex; flex-direction:column; gap:8px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px}
+.bar{display:grid; grid-template-columns:minmax(120px,190px) 1fr; gap:12px; align-items:center; font-size:14px}
+.track{position:relative; height:22px}
+.fill{position:absolute; inset:0 auto 0 0; background:var(--accent); border-radius:3px}
+.fill.them{background:var(--bad)} .fill.ref{background:var(--muted); opacity:.55}
+.val{position:absolute; top:1px; font-family:var(--mono); font-size:12.5px; padding-left:6px; color:var(--fg); white-space:nowrap}
+.axis{display:grid; grid-template-columns:minmax(120px,190px) 1fr; gap:12px; font-family:var(--mono); font-size:11px; color:var(--muted)}
+.axis div:last-child{display:flex; justify-content:space-between}
+ul{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px; max-width:70ch}
+.cmp td{white-space:normal; text-align:left; font-family:var(--body); vertical-align:top; min-width:200px}
+@media (max-width:560px){ dl{grid-template-columns:1fr} dt{margin-top:6px} .bar,.axis{grid-template-columns:100px 1fr} }
+@media (prefers-reduced-motion:no-preference){ .fill{transition:width .4s ease} }
+</style>
+<style>
+.pill{display:inline-block; font-family:var(--mono); font-size:11.5px; padding:2px 8px; border-radius:999px; border:1px solid currentColor; white-space:nowrap}
+.pill.ok{color:var(--accent)} .pill.part{color:var(--win)} .pill.no{color:var(--bad)}
+td .pill{font-family:var(--mono)}
+.cmp td:nth-child(n+3){min-width:120px}
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px}
+.box{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:8px; min-width:0}
+.box h3{font-family:var(--display); font-size:18px}
+.box .tag{font-family:var(--mono); font-size:12px; color:var(--muted)}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Dengue · 26 UFs · teste 2022–2025 · rodada 2</div>
+  <h1>O que mudou na previsão de dengue: pico, entressafra e otimização</h1>
+  <p class="lead">Segunda rodada de testes sobre os modelos do relatório anterior. Testamos 12 ideias para acertar melhor o pico das epidemias e a entressafra. Este relatório mostra o que funcionou, o que não funcionou e quais modelos usar para cada decisão.</p>
+</header>
+
+<section>
+  <h2>Resumo</h2>
+  <div class="facts">
+    <div class="fact"><b>−10%</b><span>de erro na previsão de 4 semanas à frente (MAE 648 → 583 casos por estado e semana). O viés caiu de −20% para −12%.</span></div>
+    <div class="fact"><b>−32%</b><span>de erro no pico da temporada com o novo ensemble com pesos (ENS_stack_UF), que agora acerta a faixa de 90% em 82% das semanas de pico (antes, 58%).</span></div>
+    <div class="fact"><b>−1%</b><span>de erro no total de casos da temporada com o MTGNN com cabeça do total calibrada. Os melhores modelos anteriores ficavam 37% abaixo.</span></div>
+  </div>
+  <p>A <b>previsão da próxima semana</b> já era muito boa (erro de 12%) e ficou igual: o ganho apareceu de 2 a 4 semanas à frente. Na <b>previsão da temporada</b>, o melhor modelo geral melhorou só um pouco (de 0,835 para 0,831 vezes o erro do modelo-base oficial). A rodada trouxe, porém, modelos especializados: um que acerta bem melhor o pico e outro que acerta o total de casos do ano.</p>
+  <p>Todas as escolhas foram feitas com as temporadas 2018–2021. O desempenho foi medido uma única vez em 2022–2025, período que os modelos nunca viram. Nada das rodadas anteriores foi apagado: os números novos foram salvos ao lado dos antigos.</p>
+</section>
+
+<section>
+  <h2>Como ler os números</h2>
+  <div class="tw"><table class="cmp">
+    <tr><th>Termo</th><th>O que é</th><th>Como ler</th></tr>
+    <tr><td><b>WIS e R</b></td><td>WIS mede o erro da previsão inteira: o valor central e as faixas de incerteza. R é o WIS do modelo dividido pelo de uma referência, em média por estado.</td><td>R abaixo de 1 = melhor que a referência. R 0,83 = 17% menos erro.</td></tr>
+    <tr><td><b>MAE / WAPE</b></td><td>Erro do valor central, em casos (MAE) ou em % dos casos (WAPE).</td><td>WAPE 12% = erra 12 casos a cada 100.</td></tr>
+    <tr><td><b>IC90</b></td><td>% das semanas em que o número real caiu dentro da faixa de 90%.</td><td>Ideal perto de 90%. Abaixo disso, a faixa é estreita demais.</td></tr>
+    <tr><td><b>Viés</b></td><td>Quanto a previsão central fica acima ou abaixo do real, no total.</td><td>Negativo = prevê menos casos do que houve.</td></tr>
+    <tr><td><b>Pico e entressafra</b></td><td>Cada semana de cada estado foi classificada pela própria incidência, com limites calculados só com dados até 2017. <b>Pico</b>: acima dos 25% maiores valores históricos da UF. <b>Entressafra</b>: abaixo dos 25% menores.</td><td>O erro no pico é medido em escala logarítmica (WIS log), para comparar estados grandes e pequenos.</td></tr>
+  </table></div>
+  <p class="note">Referências: <b>persistência</b> repete a semana anterior; <b>climatologia</b> usa a média histórica da mesma semana; <b>BB</b> é o modelo-base oficial do 3º desafio IMDC/Mosqlimate.</p>
+</section>
+
+<section>
+  <h2>As hipóteses testadas e o resultado</h2>
+  <p>Cada ideia foi testada mudando uma coisa por vez em um modelo que já existia. Assim, a diferença vem só da mudança.</p>
+  <div class="tw"><table class="cmp">
+    <tr><th>Hipótese</th><th>O que foi feito</th><th>Semanal</th><th>Temporada</th></tr>
+    <tr><td><b>A · medir pico e entressafra</b></td><td>Novas métricas por fase, de erro no pico e de cobertura de cada faixa.</td><td colspan="2">Mostrou o problema central: na temporada, os melhores modelos só acertavam a faixa de 90% em 58–61% das semanas de pico. A cauda de cima era curta demais.</td></tr>
+    <tr><td><b>B1 · escala por estado</b></td><td>A rede aprende cada estado na sua própria escala.</td><td><span class="pill ok">funcionou</span> R 0,238 → 0,231</td><td><span class="pill no">piorou</span> 0,889 → 0,937</td></tr>
+    <tr><td><b>B2 · pré-treino nas 435 regiões de saúde</b></td><td>A rede aprende primeiro com as regiões de saúde e depois ajusta nos estados.</td><td><span class="pill ok">funcionou</span> R 0,230; melhor modelo na entressafra (−11%)</td><td><span class="pill no">piorou</span> 0,958</td></tr>
+    <tr><td><b>B3 · variáveis de fase (Rt)</b></td><td>Taxa de reprodução (Rt), sua variação, semanas desde a última entressafra e desde o último pico, nível em relação ao p75.</td><td><span class="pill ok">funcionou</span> GBM: MAE 311 → 291; MTGNN: R 0,238 → 0,233. No ARIMA, não ajudou (0,232 → 0,233).</td><td><span class="pill part">em parte</span> erro geral pior (0,913), erro no pico menor (0,766 → 0,700)</td></tr>
+    <tr><td><b>C · tsfresh</b></td><td>780 características automáticas da curva das últimas 52 semanas. Ficaram as 40 mais relevantes, escolhidas só com 2018–2021.</td><td><span class="pill ok">funcionou</span> melhor GBM isolado: R 0,227, MAE 282 (−9%)</td><td><span class="pill no">não ajudou</span> 0,922</td></tr>
+    <tr><td><b>D1 · peso maior no pico</b></td><td>Semanas de pico e quantis altos pesam mais no treino.</td><td><span class="pill part">misto</span> GBM piorou (0,235); rede melhorou (0,230)</td><td><span class="pill part">em parte</span> geral 0,946; pico melhor (0,693)</td></tr>
+    <tr><td><b>D2 · calibração por horizonte e fase</b></td><td>Alarga as faixas e desloca o centro conforme a antecedência e a fase, com ajuste feito em 2018–2021.</td><td><span class="pill part">neutro</span> quase não muda (já estava calibrado)</td><td><span class="pill part">troca</span> corrige o viés e a cobertura no pico (até 90%), mas piora a entressafra e o erro geral (R 1,2–1,6)</td></tr>
+    <tr><td><b>D3 · acertar o total da temporada</b></td><td>A rede também é penalizada pelo erro no total de casos do ano.</td><td>—</td><td><span class="pill ok">funcionou para o total</span> com calibração, erro no total de −33% para −1%. Erro semana a semana ficou pior (0,921).</td></tr>
+    <tr><td><b>E1 · Optuna (busca de parâmetros)</b></td><td>40 tentativas no GBM e 25 no MTGNN, escolhidas só com 2018–2021.</td><td><span class="pill part">em parte</span> pior em 1 semana, melhor em 2–4 semanas (R 0,405 com tsfresh)</td><td><span class="pill ok">funcionou</span> 0,889 → 0,876 e entrou no melhor ensemble</td></tr>
+    <tr><td><b>E2 · 10 sementes</b></td><td>A mesma rede treinada 10 vezes e combinada.</td><td>—</td><td><span class="pill part">neutro</span> 0,890; pico melhor (0,659)</td></tr>
+    <tr><td><b>E3 · Chronos-2 ajustado</b></td><td>Modelo de fundação (pré-treinado em milhões de séries) ajustado aos dados de dengue.</td><td><span class="pill no">não ajudou</span> 0,253 → 0,252</td><td><span class="pill part">em parte</span> geral pior que o BB (1,19); melhor modelo nosso na entressafra (0,310)</td></tr>
+    <tr><td><b>E4 · ensemble com pesos</b></td><td>Combina os modelos com pesos diferentes por antecedência e fase, escolhidos em 2018–2021.</td><td><span class="pill ok">funcionou</span> melhor de 2 a 4 semanas (MAE em 4 semanas −10%)</td><td><span class="pill ok">funcionou no pico</span> melhor modelo no pico entre os que vencem o BB (0,524)</td></tr>
+    <tr><td><b>Variáveis em todos os modelos</b></td><td>Fase/Rt e tsfresh também nas redes e no ARIMA.</td><td><span class="pill part">pouco</span> rede: 0,233; ARIMA: igual</td><td><span class="pill no">não ajudou</span> 0,913–0,922</td></tr>
+  </table></div>
+  <p class="note">Valores de R: no semanal, 1 semana à frente, contra a climatologia. Na temporada, contra o BB e comparados com o MTGNN com peso pela população sem ajuste de largura (0,889), que é o modelo de partida.</p>
+</section>
+
+<section>
+  <h2>Previsão semanal</h2>
+  <p>Com os dados até a semana atual, prever as próximas 1 a 4 semanas. Antes, o melhor era o ENS_GBM_ARIMA (mediana do GBM e do ARIMA). Agora, de 2 a 4 semanas, o melhor é o ENS_stack_sem, que combina 12 modelos com pesos diferentes por antecedência e fase.</p>
+  <div class="tw"><table>
+    <tr><th>Antecedência</th><th>R antes</th><th>R agora</th><th>MAE antes</th><th>MAE agora</th><th>WAPE agora</th><th>IC90 agora</th><th>Viés antes → agora</th></tr>
+    <tr><td>1 semana</td><td>0,224</td><td>0,224</td><td>271</td><td>267</td><td>12,2%</td><td>91,9%</td><td>−6,7% → −6,6%</td></tr>
+    <tr class="win"><td>2 semanas</td><td>0,298</td><td>0,293</td><td>414</td><td>383</td><td>17,5%</td><td>89,1%</td><td>−11,0% → −8,9%</td></tr>
+    <tr class="win"><td>3 semanas</td><td>0,358</td><td>0,355</td><td>526</td><td>475</td><td>21,7%</td><td>88,8%</td><td>−15,2% → −8,7%</td></tr>
+    <tr class="win"><td>4 semanas</td><td>0,409</td><td>0,404</td><td>648</td><td>583</td><td>26,6%</td><td>88,5%</td><td>−20,1% → −12,5%</td></tr>
+  </table></div>
+  <p class="note">“Antes” = ENS_GBM_ARIMA_sem. “Agora” = ENS_GBM_ARIMA_MTGNNcresc_sem em 1 semana e ENS_stack_sem em 2 a 4 semanas. R contra a climatologia.</p>
+
+  <h3>Erro absoluto médio com 4 semanas de antecedência (casos por estado e semana)</h3>
+  <div class="bars" role="img" aria-label="MAE com 4 semanas: ENS_stack 583, ARIMA 646, ENS_GBM_ARIMA 648, persistência 1.186">
+    <div class="bar"><span>ENS_stack (agora)</span><div class="track"><div class="fill" style="width:44.8%"></div><span class="val" style="left:44.8%">583</span></div></div>
+    <div class="bar"><span>ARIMA</span><div class="track"><div class="fill ref" style="width:49.7%"></div><span class="val" style="left:49.7%">646</span></div></div>
+    <div class="bar"><span>ENS_GBM_ARIMA (antes)</span><div class="track"><div class="fill ref" style="width:49.8%"></div><span class="val" style="left:49.8%">648</span></div></div>
+    <div class="bar"><span>Persistência</span><div class="track"><div class="fill them" style="width:91.2%"></div><span class="val" style="left:calc(91.2% - 52px)">1.186</span></div></div>
+    <div class="axis"><div></div><div><span>0</span><span>325</span><span>650</span><span>975</span><span>1.300</span></div></div>
+  </div>
+
+  <h3>Pico e entressafra (1 semana à frente)</h3>
+  <div class="tw"><table>
+    <tr><th>Modelo</th><th>Erro no pico</th><th>Erro na entressafra</th><th>IC90 pico</th><th>IC90 entressafra</th><th>Viés pico</th><th>Viés entressafra</th></tr>
+    <tr class="win"><td>ENS_stack_sem</td><td>0,081</td><td>0,171</td><td>90,1%</td><td>86,3%</td><td>−7,3%</td><td>+15,7%</td></tr>
+    <tr><td>ENS_GBM_ARIMA_MTGNNcresc_sem</td><td>0,083</td><td>0,165</td><td>91,0%</td><td>90,9%</td><td>−7,3%</td><td>+14,9%</td></tr>
+    <tr><td>ENS_GBM_ARIMA_sem (antes)</td><td>0,084</td><td>0,164</td><td>89,2%</td><td>90,0%</td><td>−7,4%</td><td>+15,3%</td></tr>
+    <tr><td>MTGNN_cresc_pre_sem (pré-treino)</td><td>0,088</td><td>0,157</td><td>80,0%</td><td>88,8%</td><td>−8,3%</td><td>+11,2%</td></tr>
+    <tr class="ref sep"><td>Persistência</td><td>0,106</td><td>0,184</td><td>84,9%</td><td>87,8%</td><td>−0,3%</td><td>+11,6%</td></tr>
+  </table></div>
+  <p class="note">Erro = WIS em escala log (menor é melhor). Na semana seguinte, o pico já era bem previsto: a semana do pico erra em média 1,7 semana, e a altura do pico fica a menos de 25% do real em 95% dos casos. Na entressafra, todos preveem um pouco mais de casos do que há (+11% a +16%), o que, em números absolutos, é pouco.</p>
+</section>
+
+<section>
+  <h2>Previsão da temporada</h2>
+  <p>Em junho (semana 25), prever cada semana de outubro a setembro do ano seguinte, com 16 a 68 semanas de antecedência. É o horizonte de uma compra antecipada.</p>
+  <div class="tw"><table>
+    <tr><th>Modelo</th><th>R × BB</th><th>UFs melhores que BB</th><th>Erro no pico</th><th>Erro entressafra</th><th>IC90 pico</th><th>Erro no total do ano</th></tr>
+    <tr class="win"><td>ENS_grafos3_λ (melhor geral)</td><td>0,831</td><td>20 de 26</td><td>0,801</td><td>0,341</td><td>60,9%</td><td>−37%</td></tr>
+    <tr><td>ENS_grafos2_λ (melhor anterior)</td><td>0,835</td><td>20 de 26</td><td>0,831</td><td>0,350</td><td>59,5%</td><td>−37%</td></tr>
+    <tr><td>MTGNN_pesopop_UF+λ</td><td>0,839</td><td>20 de 26</td><td>0,829</td><td>0,383</td><td>57,8%</td><td>−37%</td></tr>
+    <tr><td>MTGNN_optuna10_UF (novo)</td><td>0,876</td><td>17 de 26</td><td>0,665</td><td>0,371</td><td>66,8%</td><td>−41%</td></tr>
+    <tr class="win"><td>ENS_stack_UF (melhor no pico)</td><td>0,938</td><td>14 de 26</td><td>0,524</td><td>0,364</td><td>82,2%</td><td>−16%</td></tr>
+    <tr><td>Chronos2FT_UF+λ (melhor na entressafra)</td><td>0,976</td><td>13 de 26</td><td>0,636</td><td>0,310</td><td>65,3%</td><td>−7%</td></tr>
+    <tr class="win"><td>MTGNN_total_pp_UF+cal (melhor no total)</td><td>1,604</td><td>2 de 26</td><td>0,541</td><td>0,501</td><td>89,8%</td><td>−1%</td></tr>
+    <tr class="ref sep"><td>BB (modelo-base oficial)</td><td>1,000</td><td>—</td><td>0,693</td><td>0,347</td><td>71,7%</td><td>−24%</td></tr>
+    <tr class="ref"><td>Melhor equipe do 3º IMDC (pucrio_arbocaster)</td><td>1,073</td><td>—</td><td>0,415</td><td>—</td><td>—</td><td>−9%</td></tr>
+  </table></div>
+  <p class="note">Erro no total do ano = mediana, entre estados e temporadas, do erro do total previsto. ENS_grafos3_λ é a mediana de 3 redes de grafo (MTGNN, A3TGCN, GCNGRU, com largura ajustada) e do MTGNN otimizado pelo Optuna.</p>
+
+  <h3>Erro no pico da temporada (WIS log nas semanas de pico; menor é melhor)</h3>
+  <div class="bars" role="img" aria-label="Erro no pico: pucrio 0,415; ENS_stack_UF 0,524; Chronos2FT 0,636; BB 0,693; ENS_grafos3 0,801; MTGNN pesopop 0,829">
+    <div class="bar"><span>IMDC: pucrio (externo)</span><div class="track"><div class="fill ref" style="width:41.5%"></div><span class="val" style="left:41.5%">0,415</span></div></div>
+    <div class="bar"><span>ENS_stack_UF</span><div class="track"><div class="fill" style="width:52.4%"></div><span class="val" style="left:52.4%">0,524</span></div></div>
+    <div class="bar"><span>Chronos2FT_UF+λ</span><div class="track"><div class="fill" style="width:63.6%"></div><span class="val" style="left:63.6%">0,636</span></div></div>
+    <div class="bar"><span>BB (oficial)</span><div class="track"><div class="fill them" style="width:69.3%"></div><span class="val" style="left:69.3%">0,693</span></div></div>
+    <div class="bar"><span>ENS_grafos3_λ</span><div class="track"><div class="fill" style="width:80.1%"></div><span class="val" style="left:calc(80.1% - 46px)">0,801</span></div></div>
+    <div class="bar"><span>MTGNN_pesopop+λ</span><div class="track"><div class="fill" style="width:82.9%"></div><span class="val" style="left:calc(82.9% - 46px)">0,829</span></div></div>
+    <div class="axis"><div></div><div><span>0</span><span>0,25</span><span>0,50</span><span>0,75</span><span>1,00</span></div></div>
+  </div>
+
+  <p><b>A troca entre acerto geral e acerto no pico.</b> O modelo com menor erro geral (ENS_grafos3_λ) acerta muito bem as semanas comuns e a entressafra, mas fica abaixo do real nos picos. Os modelos calibrados para o pico erram menos nos picos, mas alargam demais a faixa nas outras semanas. Não há um modelo único que vença em tudo. Por isso, a recomendação abaixo usa um modelo por decisão.</p>
+  <p><b>Por que todos ficam abaixo do real.</b> 2024 foi a maior epidemia da história do Brasil, muito acima de qualquer ano do treino. Previsões feitas em junho de 2023 não tinham como saber disso. Os modelos com calibração (D2) e com cabeça do total (D3) corrigem boa parte desse viés.</p>
+</section>
+
+<section>
+  <h2>Top 5 atuais e as variáveis de cada um</h2>
+  <div class="grid2">
+    <div class="box"><h3>Semanal · 1 semana à frente</h3><span class="tag">R × climatologia (menor é melhor)</span>
+      <ul>
+        <li><b>ENS_GBM_ARIMA_MTGNNcresc_sem</b> · 0,224 · mediana do GBM (todas as variáveis), do ARIMA e do MTGNN (só casos + mapa de vizinhança)</li>
+        <li><b>ENS_stack_sem</b> · 0,224 · 12 modelos com pesos por antecedência e fase</li>
+        <li><b>ENS_GBM_ARIMA_sem</b> · 0,224 · GBM (todas) + ARIMA</li>
+        <li><b>GBM_xgb_tsf_sem</b> · 0,227 · todas + fase/Rt + 40 do tsfresh</li>
+        <li><b>GBM_xgb_fase_sem</b> · 0,227 · todas + fase/Rt</li>
+      </ul>
+      <p class="note">Mais preciso no valor central: ARIMA_Fourier_sem (MAE 252, WAPE 11,5%), só com casos e ciclo anual.</p></div>
+    <div class="box"><h3>Semanal · 4 semanas à frente</h3><span class="tag">R × climatologia</span>
+      <ul>
+        <li><b>ENS_stack_sem</b> · 0,404 · combinação com pesos</li>
+        <li><b>GBM_xgb_optuna_tsf_sem</b> · 0,405 · todas + fase/Rt + tsfresh, parâmetros do Optuna</li>
+        <li><b>ENS_GBM_ARIMA_sem</b> · 0,409</li>
+        <li><b>GBM_xgb_optuna_sem</b> · 0,409 · todas + fase/Rt, Optuna</li>
+        <li><b>GBM_xgb_todas_sem</b> · 0,410 · todas as variáveis</li>
+      </ul></div>
+    <div class="box"><h3>Temporada · erro geral</h3><span class="tag">R × BB</span>
+      <ul>
+        <li><b>ENS_grafos3_λ</b> · 0,831 · 4 redes de grafo, só casos + vizinhança</li>
+        <li><b>ENS_grafos2_λ</b> · 0,835 · idem, com o MTGNN da rodada anterior</li>
+        <li><b>MTGNN_pesopop_UF+λ</b> · 0,839 · só casos; estados grandes pesam mais</li>
+        <li><b>MTGNN_UF+λ</b> · 0,846 · só casos</li>
+        <li><b>ENS_grafos_λ</b> · 0,848 · 3 redes de grafo</li>
+      </ul></div>
+    <div class="box"><h3>Temporada · pico, entressafra e total</h3><span class="tag">entre os nossos modelos</span>
+      <ul>
+        <li><b>Pico:</b> ENS_stack_UF (0,524). Combina as redes de grafo, o TFT, o modelo de dois estágios e o MTGNN otimizado, com pesos por antecedência.</li>
+        <li><b>Entressafra:</b> Chronos2FT_UF+λ (0,310). Modelo de fundação ajustado, só casos.</li>
+        <li><b>Total do ano:</b> MTGNN_total_pp_UF+cal (−1%). Só casos, peso pela população, perda no total, calibrado.</li>
+      </ul></div>
+  </div>
+  <p class="note">“Todas as variáveis” = casos, vizinhos, clima observado, El Niño e outros índices oceânicos, imunidade estimada, espalhamento entre municípios, chikungunya, dados Afya, população e características fixas do estado e previsão climática sazonal (SEAS5). Na temporada, os modelos só com casos e vizinhança continuam vencendo: as variáveis externas não melhoraram a previsão de longo prazo.</p>
+</section>
+
+<section>
+  <h2>Recomendação de uso</h2>
+  <dl>
+    <dt>Acompanhamento semanal</dt><dd>ENS_GBM_ARIMA_MTGNNcresc_sem para a próxima semana e ENS_stack_sem para 2 a 4 semanas. Erro de 12% a 27%, com faixas de 90% que acertam 88–92% das vezes.</dd>
+    <dt>Plano anual (junho)</dt><dd>ENS_grafos3_λ para a curva semanal da temporada. Para o <b>volume total de compra</b>, usar o total do MTGNN_total_pp_UF+cal, que não subestima o ano.</dd>
+    <dt>Estoque de segurança no pico</dt><dd>Usar o limite superior (faixa de 90%) do ENS_stack_UF. Ele cobre o pico real em 82% das semanas de pico, contra 61% do modelo geral.</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>Gráficos por estado</h2>
+  <p>O notebook <b>R2_7_Graficos_UF</b> gera uma figura para cada um dos 26 estados e uma para o Brasil. Em cima: casos reais, previsão de 1 semana (com faixa de 90%) e de 4 semanas, de out/2022 a mar/2026. Embaixo: a previsão feita em junho para cada temporada de teste, com o melhor geral, o melhor no pico, o melhor no total e o BB. Também gera um PDF com todos os estados e uma tabela de total previsto × observado por estado e temporada.</p>
+</section>
+
+<section>
+  <h2>Limites</h2>
+  <ul>
+    <li>São 4 temporadas de teste, com 2024 excepcional. Diferenças pequenas, como 0,831 contra 0,835, estão dentro do ruído.</li>
+    <li>O Espírito Santo fica de fora porque não tem dados no SINAN desde 2020.</li>
+    <li>A previsão de temporada não sabe, em junho, se o ano será recorde. Para a compra, vale combinar a previsão com uma revisão mensal usando o modelo semanal.</li>
+  </ul>
+</section>
+</div>

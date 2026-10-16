@@ -1,0 +1,193 @@
+<title>Previsão de Dengue por UF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: relatório de uma coluna (~70ch) com tabelas largas roláveis; destaque âmbar só para o vencedor de cada tabela */
+:root{
+  --bg:#f7f8f6; --surface:#ffffff; --fg:#1d2624; --muted:#5b6865; --line:#d9dfdc;
+  --accent:#0d6457; --accent-soft:#e3f0ec; --win:#b4680b; --win-soft:#fbf0de; --bad:#a3392f;
+  --display:"Literata", Georgia, "Times New Roman", serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121816; --surface:#1a2220; --fg:#e4ebe8; --muted:#9aa8a4; --line:#2f3b38;
+  --accent:#5cc2ad; --accent-soft:#1d3430; --win:#f0b25a; --win-soft:#3a2c17; --bad:#ef8a7f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121816; --surface:#1a2220; --fg:#e4ebe8; --muted:#9aa8a4; --line:#2f3b38;
+  --accent:#5cc2ad; --accent-soft:#1d3430; --win:#f0b25a; --win-soft:#3a2c17; --bad:#ef8a7f; color-scheme:dark}
+body{background:var(--bg); color:var(--fg); font-family:var(--body); font-size:16px; line-height:1.6}
+.wrap{max-width:860px; margin:0 auto; padding-inline:20px; padding-block:40px 72px; display:flex; flex-direction:column; gap:44px}
+header{display:flex; flex-direction:column; gap:12px; border-bottom:1px solid var(--line); padding-bottom:28px}
+.eyebrow{font-family:var(--mono); font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent)}
+h1{font-family:var(--display); font-weight:650; font-size:clamp(28px,4.6vw,40px); line-height:1.15; margin:0; text-wrap:balance}
+h2{font-family:var(--display); font-weight:650; font-size:24px; line-height:1.25; margin:0 0 4px; text-wrap:balance}
+h3{font-size:16px; font-weight:600; margin:0}
+p{margin:0; max-width:68ch}
+section{display:flex; flex-direction:column; gap:16px; min-width:0}
+.lead{font-size:18px; color:var(--muted)}
+.facts{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px}
+.fact{background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px; display:flex; flex-direction:column; gap:4px}
+.fact b{font-family:var(--mono); font-size:26px; font-weight:500; color:var(--accent); font-variant-numeric:tabular-nums}
+.fact span{font-size:14px; color:var(--muted)}
+.tw{overflow-x:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:14px; min-width:640px}
+th,td{padding:9px 12px; text-align:right; border-bottom:1px solid var(--line); white-space:nowrap}
+th{font-weight:600; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; background:var(--accent-soft)}
+td{font-family:var(--mono); font-variant-numeric:tabular-nums}
+td:first-child,th:first-child{text-align:left; font-family:var(--body)}
+tr:last-child td{border-bottom:none}
+tr.win td{background:var(--win-soft)} tr.win td:first-child{font-weight:600}
+tr.ref td{color:var(--muted)}
+tr.sep td{border-top:2px solid var(--line)}
+.note{font-size:13px; color:var(--muted)}
+dl{display:grid; grid-template-columns:minmax(120px,170px) 1fr; gap:10px 18px; margin:0}
+dt{font-weight:600} dd{margin:0; color:var(--fg); min-width:0}
+.models{display:flex; flex-direction:column; gap:14px}
+.model{border-left:3px solid var(--accent); padding:2px 0 2px 14px; display:flex; flex-direction:column; gap:4px}
+.model .tag{font-family:var(--mono); font-size:12px; color:var(--muted)}
+.bars{display:flex; flex-direction:column; gap:8px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:16px}
+.bar{display:grid; grid-template-columns:minmax(120px,190px) 1fr; gap:12px; align-items:center; font-size:14px}
+.track{position:relative; height:22px}
+.fill{position:absolute; inset:0 auto 0 0; background:var(--accent); border-radius:3px}
+.fill.them{background:var(--bad)} .fill.ref{background:var(--muted); opacity:.55}
+.val{position:absolute; top:1px; font-family:var(--mono); font-size:12.5px; padding-left:6px; color:var(--fg); white-space:nowrap}
+.axis{display:grid; grid-template-columns:minmax(120px,190px) 1fr; gap:12px; font-family:var(--mono); font-size:11px; color:var(--muted)}
+.axis div:last-child{display:flex; justify-content:space-between}
+ul{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px; max-width:70ch}
+.cmp td{white-space:normal; text-align:left; font-family:var(--body); vertical-align:top; min-width:200px}
+@media (max-width:560px){ dl{grid-template-columns:1fr} dt{margin-top:6px} .bar,.axis{grid-template-columns:100px 1fr} }
+@media (prefers-reduced-motion:no-preference){ .fill{transition:width .4s ease} }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Dengue · 26 UFs · teste 2022–2025</div>
+  <h1>Previsão de casos de dengue por estado</h1>
+  <p class="lead">O que foi construído, como os modelos funcionam, quanto acertam e o que evoluiu em relação ao repositório de referência (github.com/felipe-matsuoka123/Dengue).</p>
+</header>
+
+<section>
+  <h2>Resumo</h2>
+  <div class="facts">
+    <div class="fact"><b>13,0%</b><span>erro do melhor modelo semanal (WAPE), prevendo a semana seguinte em 2022–2025</span></div>
+    <div class="fact"><b>≈3×</b><span>menos erro absoluto que o modelo do repositório de referência na mesma tarefa (MAE 285 contra 799–839)</span></div>
+    <div class="fact"><b>−16,5%</b><span>de erro probabilístico (WIS) contra o modelo-base oficial do 3º IMDC na previsão da temporada inteira</span></div>
+  </div>
+  <p>Foram construídos dois tipos de previsão, para dois usos diferentes. Cada tipo tem seu melhor modelo. Todas as escolhas (modelos, variáveis, combinações) foram feitas com as temporadas 2018–2021, e o desempenho foi medido uma única vez em 2022–2025, que o modelo nunca viu.</p>
+</section>
+
+<section>
+  <h2>Os dois usos</h2>
+  <dl>
+    <dt>Semanal</dt><dd>Prever os casos da <b>próxima semana</b> (até 4 semanas à frente) com os dados até a semana atual. Serve para acompanhar a epidemia e ajustar estoque semana a semana.</dd>
+    <dt>Temporada</dt><dd>Em junho (semana epidemiológica 25), prever as <b>52 semanas seguintes a partir de outubro</b> (semana 41 a semana 40 do ano seguinte), ou seja, de 16 a 68 semanas de antecedência. É a regra do 3º desafio IMDC/Mosqlimate e o horizonte de uma compra antecipada.</dd>
+    <dt>Dados</dt><dd>Casos prováveis de dengue por UF de residência e semana (SINAN, via Mosqlimate), 2010–2026, 26 UFs (o ES não tem dados no SINAN desde 2020). Também clima observado, previsão climática sazonal (SEAS5), El Niño, vizinhança entre estados, população e outras arboviroses.</dd>
+  </dl>
+</section>
+
+<section>
+  <h2>Como os modelos foram medidos</h2>
+  <p>Cada modelo entrega uma previsão central (a mediana) e uma faixa de incerteza (intervalos de 50%, 80%, 90% e 95%). As métricas abaixo valem para os dois usos.</p>
+  <div class="tw"><table class="cmp">
+    <tr><th>Métrica</th><th>O que mede</th><th>Como ler</th></tr>
+    <tr><td><b>WIS</b></td><td>Erro da previsão inteira (centro e faixas). Penaliza errar o centro, faixas largas demais e casos que caem fora da faixa. É a métrica oficial do desafio IMDC.</td><td>Menor é melhor. Em casos por semana.</td></tr>
+    <tr><td><b>R (WIS relativo)</b></td><td>WIS do modelo dividido pelo WIS de uma referência (climatologia, persistência ou o modelo-base BB do IMDC), em média geométrica por estado.</td><td>Abaixo de 1 = melhor que a referência. 0,84 = 16% menos erro.</td></tr>
+    <tr><td><b>MAE</b></td><td>Erro absoluto médio da previsão central.</td><td>Em casos por estado e semana. Menor é melhor.</td></tr>
+    <tr><td><b>WAPE</b></td><td>Soma dos erros absolutos dividida pela soma dos casos.</td><td>Percentual. 13% = erra 13 casos a cada 100.</td></tr>
+    <tr><td><b>sMAPE</b></td><td>Erro percentual simétrico, semana a semana (escala de 0 a 200%).</td><td>Pesa igual semanas de 10 e de 10.000 casos. Menor é melhor.</td></tr>
+    <tr><td><b>IC90</b></td><td>Percentual dos casos reais que caíram dentro da faixa de 90%.</td><td>Ideal perto de 90%. Abaixo = faixas estreitas demais.</td></tr>
+    <tr><td><b>Viés</b></td><td>Soma da previsão central menos a soma dos casos, sobre a soma dos casos.</td><td>Negativo = prevê menos casos do que ocorreram.</td></tr>
+  </table></div>
+  <p class="note">Referências: <b>persistência</b> repete a semana anterior; <b>climatologia</b> usa o histórico da mesma semana do ano; <b>BB</b> é o modelo-base oficial do 3º IMDC.</p>
+</section>
+
+<section>
+  <h2>Melhor modelo semanal: ENS_GBM_ARIMA</h2>
+  <p>Previsão da semana seguinte, nas 4 temporadas de teste (out/2022 a mar/2026), com o modelo treinado uma vez antes de cada temporada e atualizado só com os dados que chegam a cada semana.</p>
+  <div class="tw"><table>
+    <tr><th>Modelo</th><th>R × climatologia</th><th>R × persistência</th><th>MAE</th><th>WAPE</th><th>sMAPE</th><th>IC90</th><th>Viés</th></tr>
+    <tr class="win"><td>1. ENS_GBM_ARIMA</td><td>0,224</td><td>0,884</td><td>285</td><td>13,0%</td><td>20,2%</td><td>91,2%</td><td>−8,2%</td></tr>
+    <tr><td>2. GBM XGBoost (todas as variáveis)</td><td>0,229</td><td>0,903</td><td>311</td><td>14,2%</td><td>20,6%</td><td>91,4%</td><td>−9,4%</td></tr>
+    <tr><td>3. GBM LightGBM (todas as variáveis)</td><td>0,230</td><td>0,910</td><td>330</td><td>15,1%</td><td>21,0%</td><td>90,0%</td><td>−11,1%</td></tr>
+    <tr><td>4. ARIMA com ciclo anual</td><td>0,232</td><td>0,917</td><td>252</td><td>11,5%</td><td>20,7%</td><td>89,7%</td><td>−3,9%</td></tr>
+    <tr><td>5. Rede de grafo MTGNN (crescimento)</td><td>0,235</td><td>0,929</td><td>281</td><td>12,8%</td><td>21,3%</td><td>89,5%</td><td>−6,5%</td></tr>
+    <tr class="ref sep"><td>Persistência (repete a semana)</td><td>0,253</td><td>1,000</td><td>354</td><td>16,2%</td><td>22,8%</td><td>88,1%</td><td>0,0%</td></tr>
+    <tr class="ref"><td>Repositório de referência: XGBoost</td><td>0,506</td><td>2,000</td><td>839</td><td>38,3%</td><td>22,9%</td><td>0%</td><td>−16,4%</td></tr>
+    <tr class="ref"><td>Repositório de referência: LightGBM</td><td>0,551</td><td>2,174</td><td>799</td><td>36,5%</td><td>26,5%</td><td>0%</td><td>−14,9%</td></tr>
+    <tr class="ref"><td>Climatologia</td><td>1,000</td><td>3,949</td><td>1.838</td><td>83,9%</td><td>80,9%</td><td>79,0%</td><td>−79,5%</td></tr>
+  </table></div>
+  <p class="note">O IC90 do repositório de referência é 0% porque ele só entrega um número, sem faixa de incerteza. Com 4 semanas de antecedência, o melhor grupo continua o mesmo (ENS_GBM_ARIMA: R 0,411, WAPE 30%, IC90 90%; persistência: WAPE 54%).</p>
+
+  <h3>Erro absoluto médio na previsão da semana seguinte (MAE, casos por estado e semana)</h3>
+  <div class="bars" role="img" aria-label="Gráfico de barras do MAE semanal">
+    <div class="bar"><span>ARIMA</span><div class="track"><div class="fill" style="width:12.6%"></div><span class="val" style="left:12.6%">252</span></div></div>
+    <div class="bar"><span>MTGNN (crescimento)</span><div class="track"><div class="fill" style="width:14.05%"></div><span class="val" style="left:14.05%">281</span></div></div>
+    <div class="bar"><span>ENS_GBM_ARIMA</span><div class="track"><div class="fill" style="width:14.25%"></div><span class="val" style="left:14.25%">285</span></div></div>
+    <div class="bar"><span>GBM XGBoost</span><div class="track"><div class="fill" style="width:15.55%"></div><span class="val" style="left:15.55%">311</span></div></div>
+    <div class="bar"><span>Persistência</span><div class="track"><div class="fill ref" style="width:17.7%"></div><span class="val" style="left:17.7%">354</span></div></div>
+    <div class="bar"><span>Referência: LightGBM</span><div class="track"><div class="fill them" style="width:39.95%"></div><span class="val" style="left:39.95%">799</span></div></div>
+    <div class="bar"><span>Referência: XGBoost</span><div class="track"><div class="fill them" style="width:41.95%"></div><span class="val" style="left:41.95%">839</span></div></div>
+    <div class="bar"><span>Climatologia</span><div class="track"><div class="fill ref" style="width:91.9%"></div><span class="val" style="left:calc(91.9% - 52px)">1.838</span></div></div>
+    <div class="axis"><div></div><div><span>0</span><span>500</span><span>1.000</span><span>1.500</span><span>2.000</span></div></div>
+  </div>
+
+  <div class="models">
+    <div class="model"><h3>ENS_GBM_ARIMA (vencedor)</h3><span class="tag">combinação de 2 modelos</span><p>Mediana das previsões do GBM XGBoost e do ARIMA. Os dois erram em momentos diferentes (o GBM reage a vizinhos e clima; o ARIMA segue a dinâmica da própria série), e a combinação reduz o erro e mantém a faixa de 90% bem calibrada.</p></div>
+    <div class="model"><h3>GBM XGBoost / LightGBM</h3><span class="tag">árvores de decisão em sequência (gradient boosting)</span><p>Aprende quanto a incidência vai <b>crescer ou cair</b> em relação à semana atual (em escala logarítmica), a partir do nível atual, das variações das últimas 1 a 8 semanas, da situação dos estados vizinhos, do padrão da mesma semana em anos anteriores e de variáveis de clima, El Niño e previsão climática sazonal. Gera 9 quantis, de onde saem as faixas. Prever o crescimento, e não a contagem, permite prever epidemias maiores que as do histórico.</p></div>
+    <div class="model"><h3>ARIMA com ciclo anual</h3><span class="tag">modelo estatístico clássico</span><p>Combina a memória das últimas semanas com uma curva sazonal (senos e cossenos). Ajustado uma vez por temporada e atualizado a cada semana pelo filtro de Kalman. É o mais preciso na previsão central (WAPE 11,5%).</p></div>
+    <div class="model"><h3>Rede de grafo MTGNN (crescimento)</h3><span class="tag">rede neural espacial</span><p>Trata os 26 estados como uma rede e aprende quem influencia quem (por exemplo, a epidemia que avança de um estado para o vizinho). Olha 2 anos de histórico e prevê o crescimento das próximas semanas.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Melhor modelo de temporada: ENS_grafos2_λ</h2>
+  <p>Previsão feita em junho para a temporada inteira (outubro a setembro), 16 a 68 semanas à frente. A régua oficial é o WIS relativo ao modelo-base BB do 3º IMDC.</p>
+  <div class="tw"><table>
+    <tr><th>Modelo</th><th>R × BB</th><th>UFs melhores que BB</th><th>R × climatologia</th><th>MAE</th><th>WAPE</th><th>IC90</th><th>Viés</th></tr>
+    <tr class="win"><td>1. ENS_grafos2_λ</td><td>0,835</td><td>20 de 26</td><td>0,841</td><td>1.776</td><td>81,1%</td><td>82,5%</td><td>−77%</td></tr>
+    <tr><td>2. MTGNN com peso por população</td><td>0,839</td><td>20 de 26</td><td>0,845</td><td>1.747</td><td>79,8%</td><td>80,4%</td><td>−76%</td></tr>
+    <tr><td>3. MTGNN</td><td>0,846</td><td>20 de 26</td><td>0,853</td><td>1.795</td><td>81,9%</td><td>81,8%</td><td>−78%</td></tr>
+    <tr><td>4. ENS_grafos_λ</td><td>0,848</td><td>21 de 26</td><td>0,854</td><td>1.788</td><td>81,6%</td><td>82,5%</td><td>−78%</td></tr>
+    <tr><td>5. ENS_UF_top7</td><td>0,850</td><td>20 de 26</td><td>0,856</td><td>1.773</td><td>80,9%</td><td>84,3%</td><td>−76%</td></tr>
+    <tr class="ref sep"><td>Melhor equipe do 3º IMDC (EMAP SARIMAX)</td><td>0,870</td><td>17 de 26</td><td>0,876</td><td>1.745</td><td>79,7%</td><td>82,8%</td><td>−69%</td></tr>
+    <tr class="ref"><td>Modelo-base oficial (BB)</td><td>1,000</td><td>—</td><td>1,007</td><td>1.787</td><td>81,6%</td><td>86,5%</td><td>−73%</td></tr>
+    <tr class="ref"><td>Repositório de referência, adaptado com faixas</td><td>1,256</td><td>6 de 26</td><td>1,265</td><td>2.007</td><td>91,6%</td><td>82,3%</td><td>−41%</td></tr>
+    <tr class="ref"><td>Repositório de referência, como está</td><td>3,303</td><td>0 de 26</td><td>3,328</td><td>2.949</td><td>134,6%</td><td>0%</td><td>+19%</td></tr>
+  </table></div>
+  <p class="note">“λ” indica que a largura das faixas foi calibrada nas temporadas de escolha (2018–2021). Comparação com as 4 temporadas de teste das equipes do 3º IMDC (mesmos dados e regras).</p>
+
+  <div class="models">
+    <div class="model"><h3>ENS_grafos2_λ (vencedor)</h3><span class="tag">combinação de 4 redes de grafo</span><p>Mediana de quatro redes neurais espaciais com faixas calibradas: MTGNN, A3T-GCN, GCN-GRU e a melhor versão nova do MTGNN escolhida nas temporadas 2018–2021. Supera o modelo-base oficial em 20 dos 26 estados e todas as equipes do 3º IMDC.</p></div>
+    <div class="model"><h3>MTGNN e MTGNN com peso por população</h3><span class="tag">rede neural de grafo, previsão direta de 68 semanas</span><p>Recebe 2 anos de histórico de casos, clima e El Niño dos 26 estados, aprende como as epidemias se propagam entre eles e prevê de uma vez o <b>desvio em relação ao padrão sazonal</b> de cada semana da temporada. A versão nova dá mais peso aos estados populosos no treino, o que melhorou o resultado (0,846 → 0,839).</p></div>
+    <div class="model"><h3>ENS_grafos_λ e ENS_UF_top7</h3><span class="tag">combinações</span><p>Mediana das três redes de grafo calibradas, e mediana dos sete melhores modelos da fase de escolha (redes de grafo, árvores e modelos de dois estágios).</p></div>
+  </div>
+  <p>A temporada é uma tarefa muito mais difícil: o erro relativo à climatologia é 0,84 na temporada e 0,22 na semana seguinte. Todos os modelos, inclusive os do desafio, previram em média 70–80% menos casos que o observado em 2022–2025, puxados pela epidemia recorde de 2024. Para uma compra antecipada, o certo é decidir por um quantil alto da previsão, e não pela mediana.</p>
+</section>
+
+<section>
+  <h2>O que evoluiu em relação ao repositório de referência</h2>
+  <div class="tw"><table class="cmp">
+    <tr><th>Aspecto</th><th>Repositório de referência</th><th>Este trabalho</th></tr>
+    <tr><td>Tarefa</td><td>Só a semana seguinte</td><td>Semana seguinte (1 a 4 semanas) e temporada inteira (16 a 68 semanas, regra do IMDC)</td></tr>
+    <tr><td>Saída</td><td>Um número por semana</td><td>Mediana e faixas de 50/80/90/95%, com cobertura de 90% verificada (IC90 ≈ 90%)</td></tr>
+    <tr><td>O que o modelo aprende</td><td>Contagens de casos; árvores não passam do máximo visto no treino</td><td>Crescimento relativo e desvio do padrão sazonal; prevê epidemias recordes</td></tr>
+    <tr><td>Espaço</td><td>Estados independentes</td><td>Vizinhança entre estados e redes de grafo que aprendem a propagação</td></tr>
+    <tr><td>Variáveis</td><td>Casos passados e população</td><td>Casos, vizinhos, clima, El Niño, previsão climática SEAS5, imunidade, espalhamento; com seleção feita só no período de escolha</td></tr>
+    <tr><td>Modelos comparados</td><td>3 árvores + persistência</td><td>Mais de 100: estatísticos, árvores, redes neurais, modelos de fundação, combinações</td></tr>
+    <tr><td>Avaliação</td><td>1 período de teste (2023–2024), métricas pontuais</td><td>8 temporadas (escolha em 2018–2021, teste em 2022–2025), métrica oficial do IMDC e métricas pontuais</td></tr>
+    <tr><td>Resultado no teste do próprio repositório (2023–2024, semana seguinte)</td><td>MAE 1.055–1.145; WAPE 34–37%; perde para a persistência (MAE 507)</td><td>MAE 372–420; WAPE 12–14%</td></tr>
+  </table></div>
+  <p class="note">Os modelos do repositório foram reimplementados com as mesmas variáveis e hiperparâmetros do código original e avaliados com os mesmos dados deste trabalho, nas mesmas semanas. Os dados do repositório (SINAN por UF de notificação) e os deste trabalho (SINAN por UF de residência) têm correlação de 0,999.</p>
+</section>
+
+<section>
+  <h2>Limitações e próximos passos</h2>
+  <ul>
+    <li>As avaliações usam dados já consolidados. Em tempo real, as últimas semanas chegam incompletas por atraso de notificação; isso precisa ser simulado antes de uso operacional.</li>
+    <li>O alvo é caso provável de dengue, não teste vendido. Para a empresa, falta ligar casos ao consumo de testes.</li>
+    <li>Na temporada, todos os modelos subestimam epidemias recordes. Os próximos testes miram o pico e a entressafra: alvos que extrapolam melhor, calibração por horizonte e decisão de compra por quantil.</li>
+  </ul>
+</section>
+</div>

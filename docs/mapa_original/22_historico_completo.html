@@ -1,0 +1,557 @@
+<title>Histórico Dengue IMDC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: caderno de laboratório. Índice fixo à esquerda no desktop, coluna única no celular; cada fase do projeto é um capítulo com data, o que fizemos, números e lições. */
+:root{
+  --bg:#f5f7f6; --surface:#ffffff; --ink:#18262b; --muted:#566a70; --line:#d5dfdf;
+  --teal:#0e7468; --teal-soft:#d9efea; --amber:#a8650a; --amber-soft:#f6e7cf; --red:#b0342c; --red-soft:#f6dcd9;
+  --font-display:"Literata", Georgia, "Times New Roman", serif;
+  --font-body:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-data:"JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1719; --surface:#162226; --ink:#e3ecec; --muted:#97adb1; --line:#2b3c41;
+  --teal:#4cc4b3; --teal-soft:#16352f; --amber:#e3a645; --amber-soft:#3a2b12; --red:#ef7f75; --red-soft:#3d1c19; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1719; --surface:#162226; --ink:#e3ecec; --muted:#97adb1; --line:#2b3c41;
+  --teal:#4cc4b3; --teal-soft:#16352f; --amber:#e3a645; --amber-soft:#3a2b12; --red:#ef7f75; --red-soft:#3d1c19; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15.5px;line-height:1.62}
+.wrap{display:grid;grid-template-columns:230px minmax(0,1fr);gap:48px;max-width:1240px;margin:0 auto;padding-inline:24px;padding-block:40px 80px}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;font-size:13.5px;max-height:calc(100vh - 48px);overflow:auto}
+nav.toc .lab{font-family:var(--font-data);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+nav.toc a{color:var(--ink);text-decoration:none;display:block;padding:4px 8px;border-radius:4px}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--teal-soft);outline:none}
+nav.toc .d{font-family:var(--font-data);font-size:11px;color:var(--muted)}
+main{min-width:0}
+header.hero{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:8px}
+.eyebrow{font-family:var(--font-data);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal)}
+h1{font-family:var(--font-display);font-weight:650;font-size:clamp(30px,4.2vw,44px);line-height:1.12;margin:8px 0 14px;text-wrap:balance}
+h2{font-family:var(--font-display);font-weight:650;font-size:27px;line-height:1.2;margin:0 0 6px;text-wrap:balance}
+h3{font-size:17px;font-weight:700;margin:26px 0 8px}
+p,li{max-width:72ch}
+.lede{font-size:17.5px;color:var(--ink)}
+.muted{color:var(--muted)}
+section.ch{padding-top:44px;margin-top:28px;border-top:1px solid var(--line)}
+.ch-head{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;margin-bottom:12px}
+.when{font-family:var(--font-data);font-size:12.5px;color:var(--muted)}
+.tag{font-family:var(--font-data);font-size:11px;letter-spacing:.04em;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.tw{overflow-x:auto;margin:12px 0 4px;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12px;white-space:nowrap;background:var(--bg)}
+tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right;font-family:var(--font-data);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.best td{background:var(--teal-soft)}
+tr.ref td{color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin:6px 0 0}
+.lesson{border-left:3px solid var(--teal);padding:4px 0 4px 14px;margin:14px 0}
+.lesson b{color:var(--teal)}
+.warn{border-left:3px solid var(--amber);padding:4px 0 4px 14px;margin:14px 0}
+.v{font-family:var(--font-data);font-size:11.5px;padding:1px 7px;border-radius:4px;white-space:nowrap}
+.v.ok{background:var(--teal-soft);color:var(--teal)}
+.v.no{background:var(--red-soft);color:var(--red)}
+.v.mix{background:var(--amber-soft);color:var(--amber)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:22px 0 4px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .val{font-family:var(--font-data);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12.5px;color:var(--muted)}
+/* gráficos */
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 16px 10px;margin:14px 0}
+.chart .ttl{font-weight:600;font-size:14px;margin-bottom:2px}
+.chart .sub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.row{display:grid;grid-template-columns:minmax(150px,230px) minmax(0,1fr) 64px;gap:10px;align-items:center;font-size:12.5px;padding:3px 0}
+.row .lab{min-width:0}
+.row .num{font-family:var(--font-data);font-variant-numeric:tabular-nums;text-align:right}
+.track{position:relative;height:18px}
+.track .base{position:absolute;inset:8px 0 auto 0;height:1px;background:var(--line)}
+.dot{position:absolute;top:3px;width:12px;height:12px;border-radius:50%;background:var(--teal);transform:translateX(-50%)}
+.dot.ref{background:var(--muted)}
+.vline{position:absolute;top:-4px;bottom:-4px;width:0;border-left:1px dashed var(--muted)}
+.bar{position:absolute;top:3px;height:12px;border-radius:2px;background:var(--teal)}
+.bar.leak{background:var(--amber)}
+.bar.neg{background:var(--red)}
+.bar.pos{background:var(--amber)}
+.bar.ref{background:var(--muted)}
+.axis{display:grid;grid-template-columns:minmax(150px,230px) minmax(0,1fr) 64px;gap:10px;font-family:var(--font-data);font-size:11px;color:var(--muted);margin-top:4px}
+.axis .ticks{position:relative;height:14px}
+.axis .ticks span{position:absolute;transform:translateX(-50%)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+code{font-family:var(--font-data);font-size:12.5px;background:var(--surface);border:1px solid var(--line);padding:0 4px;border-radius:3px}
+a{color:var(--teal)}
+@media (max-width:880px){
+  .wrap{grid-template-columns:1fr;gap:12px;padding-inline:16px;padding-block:24px 60px}
+  nav.toc{position:static;max-height:none;border-bottom:1px solid var(--line);padding-bottom:14px}
+  nav.toc ol{grid-template-columns:1fr 1fr}
+  .row,.axis{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 48px}
+}
+@media (prefers-reduced-motion:no-preference){nav.toc a{transition:background .15s}}
+</style>
+
+<div class="wrap">
+<nav class="toc" aria-label="Capítulos">
+  <div class="lab">Capítulos</div>
+  <ol>
+    <li><a href="#resumo">Resumo <span class="d">jun → out</span></a></li>
+    <li><a href="#evolucao">Evolução em 3 gráficos</a></li>
+    <li><a href="#fase1">1 · AGCRN semanal municipal <span class="d">jun</span></a></li>
+    <li><a href="#fase2">2 · Bancos refeitos e Modelo 2 v2–v3 <span class="d">28–29/09</span></a></li>
+    <li><a href="#fase3">3 · Virada para a temporada <span class="d">29–30/09</span></a></li>
+    <li><a href="#fase4">4 · Competição de 19 modelos <span class="d">30/09</span></a></li>
+    <li><a href="#fase5">5 · Modelos direto por UF <span class="d">01/10</span></a></li>
+    <li><a href="#fase6">6 · Felipe e retreino semanal <span class="d">08–11/10</span></a></li>
+    <li><a href="#fase7">7 · Rodada 2: pico e entressafra <span class="d">11–12/10</span></a></li>
+    <li><a href="#fase8">8 · Detector de anos grandes (R3) <span class="d">13/10</span></a></li>
+    <li><a href="#fase9">9 · Literatura aplicada (R4) <span class="d">13/10</span></a></li>
+    <li><a href="#fase10">10 · Modelo final por fase (R5) <span class="d">13–14/10</span></a></li>
+    <li><a href="#fase11">11 · Otimização com Optuna (R6) <span class="d">13–14/10</span></a></li>
+    <li><a href="#fase12">12 · Ensemble do pico (R7) <span class="d">13–14/10</span></a></li>
+    <li><a href="#arquiteturas">Catálogo de arquiteturas</a></li>
+    <li><a href="#hipoteses">Hipóteses e vereditos</a></li>
+    <li><a href="#bugs">Bugs e problemas de dados</a></li>
+    <li><a href="#metricas">Glossário de métricas</a></li>
+    <li><a href="#agora">Onde estamos</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="hero" id="resumo">
+  <div class="eyebrow">Previsão de dengue por UF · 3º IMDC / Mosqlimate · DASA</div>
+  <h1>Histórico completo do projeto, da AGCRN municipal ao ensemble do pico</h1>
+  <p class="lede">Começamos em junho prevendo a <b>próxima semana</b> em 5.492 municípios com uma rede de grafos (AGCRN) e somando para os estados. Em 29/09 descobrimos que o desafio pede outra coisa: prever a <b>temporada inteira (SE41 → SE40) usando só dados até a SE25</b>, de 16 a 68 semanas à frente. Daí em diante, foram 12 fases, mais de 100 modelos e 7 rodadas focadas no problema que sobrou: <b>os anos epidêmicos</b>.</p>
+  <div class="kpis">
+    <div class="kpi"><div class="k">Temporada · melhor R × BB (teste 2022–25)</div><div class="val">0,808</div><div class="s">ENS_pico7_UF (R7) · começou em 0,938 (V4)</div></div>
+    <div class="kpi"><div class="k">Melhor equipe do 3º IMDC</div><div class="val">0,870</div><div class="s">EMAP SARIMAX · estamos 7% abaixo</div></div>
+    <div class="kpi"><div class="k">Altura do pico (erro mediano)</div><div class="val">+2%</div><div class="s">ENS_pico7_simples · o normal errava −42%</div></div>
+    <div class="kpi"><div class="k">Semanal h = 1 · R × climatologia</div><div class="val">0,224</div><div class="s">ENS_GBM_ARIMA · MAE 267–285, IC90 91–92%</div></div>
+  </div>
+  <p class="note">R × BB = WIS do modelo ÷ WIS do modelo-base oficial (BB), média geométrica entre UFs e temporadas; abaixo de 1 = melhor que o BB. "Olha o teste" quer dizer que o número foi visto antes de uma decisão; está marcado onde aconteceu.</p>
+</header>
+
+<section class="ch" id="evolucao">
+  <h2>A evolução em três gráficos</h2>
+  <p>Três réguas contam a história: o erro semanal no começo, a régua oficial da temporada depois da virada e a altura do pico nas rodadas finais.</p>
+
+  <div class="chart" role="img" aria-label="MAE estadual da Season 1 por versão do modelo semanal: de 830 no Modelo 1 a 243 no Modelo 2 v2 com pós-processamento v3; persistência 185">
+    <div class="ttl">Fase semanal · MAE estadual na Season 1 (2022-23), casos por semana</div>
+    <div class="sub">Menor é melhor. Em âmbar, números que usavam os casos reais do teste no MinT (otimistas).</div>
+    <div class="row"><span class="lab">M1 · AGCRN simples (jun)</span><span class="track"><span class="bar leak" style="left:0;width:84.8%"></span></span><span class="num">830</span></div>
+    <div class="row"><span class="lab">M2 · bimodal seca/pico (jun)</span><span class="track"><span class="bar leak" style="left:0;width:48.6%"></span></span><span class="num">476</span></div>
+    <div class="row"><span class="lab">M3 · pico com atenção (jun)</span><span class="track"><span class="bar leak" style="left:0;width:100%"></span></span><span class="num">979</span></div>
+    <div class="row"><span class="lab">M2 nos dados corrigidos</span><span class="track"><span class="bar leak" style="left:0;width:76.5%"></span></span><span class="num">749</span></div>
+    <div class="row"><span class="lab">M2 v2 (com MinT)</span><span class="track"><span class="bar leak" style="left:0;width:57.2%"></span></span><span class="num">560</span></div>
+    <div class="row"><span class="lab">M2 v2 sem MinT (honesto)</span><span class="track"><span class="bar" style="left:0;width:84.7%"></span></span><span class="num">829</span></div>
+    <div class="row"><span class="lab">M2 v2 recalibrado</span><span class="track"><span class="bar" style="left:0;width:29.9%"></span></span><span class="num">293</span></div>
+    <div class="row"><span class="lab">M2 v2 + pós v3</span><span class="track"><span class="bar" style="left:0;width:24.8%"></span></span><span class="num">243</span></div>
+    <div class="row"><span class="lab">M2 v3.1</span><span class="track"><span class="bar" style="left:0;width:28.8%"></span></span><span class="num">282</span></div>
+    <div class="row"><span class="lab">Persistência (repete a semana)</span><span class="track"><span class="bar ref" style="left:0;width:18.9%"></span></span><span class="num">185</span></div>
+    <div class="legend"><span><i style="background:var(--amber)"></i>olhava o teste (MinT)</span><span><i style="background:var(--teal)"></i>honesto</span><span><i style="background:var(--muted)"></i>referência</span></div>
+  </div>
+
+  <div class="chart" role="img" aria-label="Melhor R contra o BB na temporada ao longo do tempo: 0,938 em 30/09, 0,865, 0,846, 0,835, 0,831, 0,828 e 0,808 em 13/10">
+    <div class="ttl">Fase temporada · melhor R × BB no teste 2022–2025</div>
+    <div class="sub">Mais à esquerda é melhor. Linhas tracejadas: melhor equipe do 3º IMDC (0,870) e o próprio BB (1,0).</div>
+    <div class="row"><span class="lab">30/09 · V4, mediana bases + A</span><span class="track"><span class="base"></span><span class="vline" style="left:40.9%"></span><span class="vline" style="left:100%"></span><span class="dot" style="left:71.8%"></span></span><span class="num">0,938</span></div>
+    <div class="row"><span class="lab">30/09 · ARIMA_Fourier (competição)</span><span class="track"><span class="base"></span><span class="vline" style="left:40.9%"></span><span class="vline" style="left:100%"></span><span class="dot" style="left:38.6%"></span></span><span class="num">0,865</span></div>
+    <div class="row"><span class="lab">01/10 · MTGNN_UF+λ</span><span class="track"><span class="base"></span><span class="vline" style="left:40.9%"></span><span class="vline" style="left:100%"></span><span class="dot" style="left:30.0%"></span></span><span class="num">0,846</span></div>
+    <div class="row"><span class="lab">11/10 · ENS_grafos2_λ</span><span class="track"><span class="base"></span><span class="vline" style="left:40.9%"></span><span class="vline" style="left:100%"></span><span class="dot" style="left:25.0%"></span></span><span class="num">0,835</span></div>
+    <div class="row"><span class="lab">12/10 · ENS_grafos3_λ (R2)</span><span class="track"><span class="base"></span><span class="vline" style="left:40.9%"></span><span class="vline" style="left:100%"></span><span class="dot" style="left:23.2%"></span></span><span class="num">0,831</span></div>
+    <div class="row"><span class="lab">13/10 · AJ_continuo (R3)</span><span class="track"><span class="base"></span><span class="vline" style="left:40.9%"></span><span class="vline" style="left:100%"></span><span class="dot" style="left:21.8%"></span></span><span class="num">0,828</span></div>
+    <div class="row"><span class="lab">13/10 · ENS_pico7_UF (R7)</span><span class="track"><span class="base"></span><span class="vline" style="left:40.9%"></span><span class="vline" style="left:100%"></span><span class="dot" style="left:12.7%"></span></span><span class="num">0,808</span></div>
+    <div class="axis"><span></span><span class="ticks"><span style="left:0">0,78</span><span style="left:40.9%">0,87</span><span style="left:68.2%">0,93</span><span style="left:100%">1,00</span></span><span></span></div>
+  </div>
+
+  <div class="chart" role="img" aria-label="Erro mediano da altura do pico por modelo, de −43% a +12%; o melhor é o ENS_pico7_simples com +2%">
+    <div class="ttl">Rodadas do pico · erro mediano da altura do pico (teste 2022–2025)</div>
+    <div class="sub">Zero é o ideal. Vermelho = fica baixo; âmbar = passa do real.</div>
+    <div class="row"><span class="lab">BB (modelo-base oficial)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar ref" style="left:20.0%;width:51.43%"></span></span><span class="num">−36%</span></div>
+    <div class="row"><span class="lab">ENS_grafos3_λ, o normal (R2)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:11.43%;width:60.0%"></span></span><span class="num">−42%</span></div>
+    <div class="row"><span class="lab">AJ_continuo (R3)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:31.43%;width:40.0%"></span></span><span class="num">−28%</span></div>
+    <div class="row"><span class="lab">MIX_escala (R3)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:65.71%;width:5.71%"></span></span><span class="num">−4%</span></div>
+    <div class="row"><span class="lab">MIX_elastico (R4, detector ruim)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:10.0%;width:61.43%"></span></span><span class="num">−43%</span></div>
+    <div class="row"><span class="lab">ENS_regime+cal (R4)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:50.0%;width:21.43%"></span></span><span class="num">−15%</span></div>
+    <div class="row"><span class="lab">MIX_elastico5 (R5)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:54.29%;width:17.14%"></span></span><span class="num">−12%</span></div>
+    <div class="row"><span class="lab">MIX_escala5 (R5)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar pos" style="left:71.43%;width:16.43%"></span></span><span class="num">+12%</span></div>
+    <div class="row"><span class="lab">MIX_elastico6 (R6)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:57.86%;width:13.57%"></span></span><span class="num">−9,5%</span></div>
+    <div class="row"><span class="lab">MIX_escala6 (R6)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:41.43%;width:30.0%"></span></span><span class="num">−21%</span></div>
+    <div class="row"><span class="lab">ENS_pico7_UF (R7)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar neg" style="left:42.86%;width:28.57%"></span></span><span class="num">−20%</span></div>
+    <div class="row"><span class="lab">ENS_pico7_simples (R7)</span><span class="track"><span class="vline" style="left:71.43%"></span><span class="bar pos" style="left:71.43%;width:3.14%"></span></span><span class="num">+2%</span></div>
+    <div class="axis"><span></span><span class="ticks"><span style="left:0">−50%</span><span style="left:28.57%">−30%</span><span style="left:57.14%">−10%</span><span style="left:71.43%">0</span><span style="left:100%">+20%</span></span><span></span></div>
+  </div>
+</section>
+
+<!-- ============================================================ FASE 1 -->
+<section class="ch" id="fase1">
+  <div class="ch-head"><h2>1 · AGCRN semanal municipal</h2><span class="when">mar → 19/06/2026</span><span class="tag">1 semana à frente</span></div>
+  <p><b>Objetivo da época:</b> prever casos semanais por UF com intervalos de 50/80/90/95%. A ideia foi prever no nível <b>municipal</b> (5.492 municípios, sem o ES) com uma rede de grafos recorrente <b>AGCRN</b> e saída <b>Binomial Negativa</b>, depois somar até a UF e reconciliar com <b>MinT</b>.</p>
+
+  <h3>Ciclos de trabalho</h3>
+  <div class="tw"><table>
+    <tr><th>Data</th><th>Ciclo</th><th>O que foi feito</th><th>Resultado</th></tr>
+    <tr><td class="n">mar–jun</td><td>0 · Dados e regras</td><td>13 arquivos brutos: dengue, chikungunya, clima observado e previsto (ECMWF), oceano, população, Köppen/bioma, regionais de saúde, acessos Afya, malhas</td><td>Regra-chave lida: prever a safra inteira com dados até a SE25 (só seria levada a sério em 29/09)</td></tr>
+    <tr><td class="n">11/06</td><td>1 · Protótipo v0</td><td>AGCRN + "física da epidemia" por Processo Gaussiano Esparso por município + SHAP do XGBoost (sem walk-forward)</td><td>Sem resultado registrado; SGP lento demais e SHAP vazava</td></tr>
+    <tr><td class="n">16/06</td><td>2 · Pipeline v1 "ambicioso"</td><td>Savitzky-Golay, SHAP walk-forward, imunidade EWM (meia-vida 104 semanas), NB com r dependente de velocidade e aceleração, ensemble AGCRN + LightGBM + Ridge, Optuna, MinT</td><td>Não chegou ao notebook final (custo no Colab)</td></tr>
+    <tr><td class="n">16–17/06</td><td>3 · Bancos V1 → V3</td><td>R junta os CSVs (V1, 69 col.) → engenharia com lags climáticos e física (V2, 138 col.) → SHAP walk-forward → 9 features estáveis (V3, 22 col.)</td><td>12 features: seno da semana, umidade, chuva e temperatura previstas, imunidade EWM, Afya, pressão, chikungunya, Köppen + física</td></tr>
+    <tr><td class="n">17/06</td><td>4 · Modelo 1</td><td>AGCRN (K = 2, 64 canais, embedding 32), NB-NLL, AdamW, MinT</td><td>Estadual MAE 830, r 0,67. Subestima picos no Sul/Sudeste</td></tr>
+    <tr><td class="n">17–19/06</td><td>5 · Engenharia espacial V4 → V7</td><td>Remove duplicatas, cria vizinhos W1/W2, SHAP separado por regime (seca SE23–48, pico SE49–22), log1p da incidência e StandardScaler</td><td>V5a reintroduziu duplicatas (4,18 mi linhas); V5b corrigiu</td></tr>
+    <tr class="best"><td class="n">19/06</td><td>6 · <b>Modelo 2 bimodal</b></td><td>Dois especialistas AGCRN: PICO (SE47→25, loss que pune subestimar) e SECA (SE26→46, loss que pune falso alarme); MinT dinâmico</td><td><b>Estadual MAE 476, r 0,93</b>; municipal MAE 3,89, r 0,56. Acerta o timing, subestima a amplitude no Sul</td></tr>
+    <tr><td class="n">19/06</td><td>7 · Modelo 3</td><td>PICO ganha Multi-Head Attention espacial (4 cabeças), loss ×1,5 ao subestimar, treino sem validação; depois máscara por macrorregião</td><td>Estadual MAE 979, r 0,39. Pior que o M1: o especialista de pico colapsou perto de zero</td></tr>
+    <tr><td class="n">19/06</td><td>8 · Parada</td><td>Inferência com warm-up incompleta; docx de avaliação dos 3 modelos</td><td>Só a Season 1 avaliada; nenhuma submissão</td></tr>
+  </table></div>
+
+  <h3>Métricas da fase (Season 1, 2022-23)</h3>
+  <div class="tw"><table>
+    <tr><th>Versão</th><th class="n">MAE est.</th><th class="n">sMAPE</th><th class="n">r est.</th><th class="n">IC95 est.</th><th class="n">MAE mun.</th><th class="n">r mun.</th></tr>
+    <tr><td>M1 · AGCRN simples</td><td class="n">830</td><td class="n">68,2%</td><td class="n">0,67</td><td class="n">–</td><td class="n">5,23</td><td class="n">0,47</td></tr>
+    <tr class="best"><td>M2 · bimodal</td><td class="n">476</td><td class="n">63,7%</td><td class="n">0,93</td><td class="n">98,2</td><td class="n">3,89</td><td class="n">0,56</td></tr>
+    <tr><td>M3 · atenção no pico</td><td class="n">979</td><td class="n">95,3%</td><td class="n">0,39</td><td class="n">82,2</td><td class="n">4,79</td><td class="n">0,25</td></tr>
+    <tr class="ref"><td>Persistência</td><td class="n">197</td><td class="n">26,5%</td><td class="n">0,98</td><td class="n">–</td><td class="n">1,75</td><td class="n">0,97</td></tr>
+    <tr class="ref"><td>Climatologia</td><td class="n">773</td><td class="n">78,3%</td><td class="n">0,77</td><td class="n">–</td><td class="n">4,71</td><td class="n">0,34</td></tr>
+  </table></div>
+  <p class="note">Todos esses números usavam o MinT, que calculava os pesos com os casos reais do teste (descoberto em 29/09). Os dados ainda tinham duplicatas.</p>
+  <div class="lesson"><b>Lições:</b> separar pico e seca foi o maior salto da fase (r 0,67 → 0,93). Atenção espacial pesada no pico, sem validação, colapsou. Nada disso batia a persistência.</div>
+</section>
+
+<!-- ============================================================ FASE 2 -->
+<section class="ch" id="fase2">
+  <div class="ch-head"><h2>2 · Bancos refeitos e Modelo 2 v2–v3</h2><span class="when">28–29/09/2026</span><span class="tag">1 semana à frente</span></div>
+  <p>O projeto foi retomado com um <b>mapa completo</b> (documentos 00 a 03). A auditoria achou erros sérios nos bancos, e tudo foi refeito do zero a partir dos CSVs brutos.</p>
+  <div class="tw"><table>
+    <tr><th>Ciclo</th><th>O que foi feito</th><th>Resultado (S1)</th></tr>
+    <tr><td>9 · Bancos V8</td><td><code>refazer_season.py</code>: grade município × semana sem duplicatas, para S1–S4; 79 checagens por safra + 38 de auditoria</td><td>M2 original nos dados limpos: MAE 476 → <b>749</b>, r 0,93 → 0,91. O modelo antigo se apoiava em artefatos (Afya constante = porte da cidade)</td></tr>
+    <tr><td>10 · SHAP refeito</td><td>Alvo = semana seguinte, Poisson com offset, sondas de ruído, filtro de redundância, 4 safras</td><td>A variável mais importante (incidência observada da semana) não entrava no modelo. Afya e chikungunya abaixo do ruído. Histórico de dengue = 71–82% da importância</td></tr>
+    <tr><td>11 · M2 v2</td><td>Features novas, previsão alinhada (t−1 prevê t), validação na última temporada, early stopping</td><td>MAE 560 (com MinT), r 0,97; municipal r 0,56 → 0,82. Sem MinT, honesto: MAE 829</td></tr>
+    <tr><td>11b · Recalibração</td><td>Fator de viés por regime medido na validação + soma estadual NB</td><td>MAE <b>293</b></td></tr>
+    <tr class="best"><td>12 · Pós v3</td><td>Fator por UF encolhido ao nacional, inflação de variância estadual, tudo na validação</td><td>Com os pesos da v2: <b>MAE 243</b>, r 0,98, IC50 50%</td></tr>
+    <tr><td>12b · M2 v3 / v3.1</td><td>Losses equilibradas (3× a mais custa o mesmo que 3× a menos), cada especialista aprende o outro regime com peso 0,25</td><td>v3: MAE 318 (mediana da NB inflada colapsou); v3.1: MAE 282; municipal MAE <b>2,93</b>, r 0,84 (melhor municipal)</td></tr>
+  </table></div>
+  <div class="lesson"><b>Lições:</b> os ganhos aparentes de junho vinham em parte de vazamento (MinT) e de artefatos de dados. Com tudo honesto, o melhor estadual chegou a 243, mas a persistência fazia 185. O viés regional continuou: superestima Norte/Nordeste/Centro-Oeste e subestima o pico do Sul (PR 0,6×).</div>
+</section>
+
+<!-- ============================================================ FASE 3 -->
+<section class="ch" id="fase3">
+  <div class="ch-head"><h2>3 · A virada: prever a temporada inteira</h2><span class="when">29–30/09/2026</span><span class="tag">SE25 → SE41…SE40</span></div>
+  <p>Uma revisão de literatura (PubMed, web e os resultados publicados dos três IMDC) mostrou que o desafio pede a <b>temporada inteira a partir da SE25</b>, avaliada por <b>WIS sobre 9 quantis, relativo ao modelo-base BB</b>. Um experimento com um modelo linear simples testou se a habilidade de 1 semana se transfere.</p>
+  <div class="tw"><table>
+    <tr><th>Forma de usar o mesmo modelo</th><th class="n">WIS × climatologia</th><th class="n">WIS log</th></tr>
+    <tr><td>1 semana à frente com casos observados (como o Modelo 2)</td><td class="n">0,19</td><td class="n">0,23</td></tr>
+    <tr><td>Desenrolado da SE25, com trajetórias</td><td class="n">1,02</td><td class="n">0,80</td></tr>
+    <tr><td>Direto multi-horizonte</td><td class="n">0,98</td><td class="n">0,81</td></tr>
+    <tr class="best"><td>Ensemble dos três</td><td class="n">0,94</td><td class="n">0,80</td></tr>
+    <tr class="ref"><td>Repetir a SE25</td><td class="n">2,32</td><td class="n">1,06</td></tr>
+  </table></div>
+  <p><b>Decisão:</b> abandonar a otimização em 1 semana; a régua passa a ser o BB. O que importa é saber o <b>tamanho</b> da temporada; direto e recursivo empatam.</p>
+
+  <h3>V4 (29–30/09)</h3>
+  <p>Pipeline da tarefa oficial: avaliador WIS idêntico ao oficial (razão 1,000 nas validações publicadas), modelos-base (climatologia, canal endêmico NB, AR recursivo, AR longo), <b>versão A</b> (AGCRN direta de 68 semanas, âncora sazonal, origens sintéticas) e <b>versão B</b> (LightGBM do tamanho × forma média).</p>
+  <div class="tw"><table>
+    <tr><th>Modelo (S1–S4)</th><th class="n">R × BB</th><th class="n">UFs &gt; BB</th></tr>
+    <tr class="best"><td>ENS_bases_A_mediana</td><td class="n">0,938</td><td class="n">18</td></tr>
+    <tr><td>ENS_bases_AB_mediana</td><td class="n">0,944</td><td class="n">19</td></tr>
+    <tr><td>AR longo</td><td class="n">0,980</td><td class="n">14</td></tr>
+    <tr><td>Climatologia</td><td class="n">1,012</td><td class="n">16</td></tr>
+    <tr><td>A por UF / por região</td><td class="n">1,121 / 1,365</td><td class="n">11 / 10</td></tr>
+    <tr><td>B por UF / por região</td><td class="n">1,238 / 1,382</td><td class="n">6 / 4</td></tr>
+  </table></div>
+  <div class="lesson"><b>Lições do V4:</b> a mediana dos membros vence média e pesos; a versão A piora com mais treino (sai da âncora); a B por região usa <code>uf_code</code> e ENSO como "identificador de ano". Na ablação, a tendência de 8 semanas é o grupo que mais ajuda (−6,5% ao tirar); taxa de ataque (+6,0%) e SEAS5 (+1,5%) <b>atrapalham</b>. Recalibrar com temporadas passadas (conformal) piorou. O maior erro de todos: o surto do Sul em 2022/23.</div>
+</section>
+
+<!-- ============================================================ FASE 4 -->
+<section class="ch" id="fase4">
+  <div class="ch-head"><h2>4 · Competição de 19 modelos por região de saúde</h2><span class="when">30/09/2026</span><span class="tag">435 regiões → 26 UFs</span></div>
+  <p>17 famílias da literatura e do 3º IMDC reimplementadas, todas por região de saúde e somadas até a UF (dependência espacial por reordenação de Schaake), em 4 notebooks do Colab (CPU, INLA, GPU, avaliação).</p>
+  <div class="tw"><table>
+    <tr><th>#</th><th>Modelo</th><th class="n">R × BB</th><th class="n">UFs &gt; BB</th><th class="n">IC50 / IC90</th></tr>
+    <tr class="best"><td>1</td><td><b>ARIMA_Fourier</b> (sem covariáveis)</td><td class="n">0,865</td><td class="n">19</td><td class="n">47 / 82</td></tr>
+    <tr class="ref"><td>–</td><td>EMAP SARIMAX (1º do 3º IMDC)</td><td class="n">0,870</td><td class="n">17</td><td class="n">46 / 83</td></tr>
+    <tr class="ref"><td>–</td><td>LNCC ARP26 / Purdue</td><td class="n">0,897 / 0,904</td><td class="n">18 / 20</td><td class="n">–</td></tr>
+    <tr><td>2</td><td>Climatologia</td><td class="n">0,993</td><td class="n">16</td><td class="n">42 / 79</td></tr>
+    <tr><td>3</td><td>ENS_mediana de todos</td><td class="n">1,003</td><td class="n">15</td><td class="n">55 / 88</td></tr>
+    <tr><td>4–7</td><td>AR_longo · LightGBM_direto · SURGE · canal endêmico</td><td class="n">1,015–1,052</td><td class="n">10–15</td><td class="n">–</td></tr>
+    <tr><td>9</td><td>Renovação_S (1º no Sul)</td><td class="n">1,167</td><td class="n">11</td><td class="n">42 / 73</td></tr>
+    <tr><td>11–13</td><td>GHR_INLA · XGBoost_quantis · Tamanho_x_forma</td><td class="n">1,233–1,361</td><td class="n">3–6</td><td class="n">–</td></tr>
+    <tr><td>14</td><td><b>AGCRN</b></td><td class="n">1,378</td><td class="n">9</td><td class="n">53 / 88</td></tr>
+    <tr><td>15–18</td><td>Chronos · BB_INLA (nossa) · Prophet · ETS_MSTL</td><td class="n">1,431–1,833</td><td class="n">1–7</td><td class="n">–</td></tr>
+  </table></div>
+  <p class="note">Por região (× climatologia): ARIMA_Fourier 0,878 (343 de 435 regiões), AGCRN 1,210. Ressalva: a correção do ARIMA (sem drift, d = 0) foi feita depois de vê-lo falhar em 2022.</p>
+  <div class="lesson"><b>Lições:</b> a 16–67 semanas, a informação útil é o <b>nível atual + a sazonalidade</b>. Nenhum modelo com covariáveis superou o ARIMA sem covariáveis. A AGCRN ficou para trás e foi abandonada para a temporada. Diferenças entre famílias (~40%) dominam os ganhos de variáveis (1–6%).</div>
+</section>
+
+<!-- ============================================================ FASE 5 -->
+<section class="ch" id="fase5">
+  <div class="ch-head"><h2>5 · Modelos direto por UF, econometria e redes de grafo</h2><span class="when">30/09 → 01/10/2026</span><span class="tag">83 modelos</span></div>
+  <p>Tabelas unificadas por UF (semanal, temporada, estática, SEAS5, vizinhança; 38 checagens), 4 notebooks (portados, CPU, GPU, avaliação) e um protocolo fixo: <b>escolhas em 2018–2021 (afinação), teste 2022–2025 olhado uma vez</b>. Entraram auto.arima em R e Python (livre e d = 0), ARIMAX, 6 VARs (macrorregião, espacial, BVAR Minnesota, com e sem ENSO), redes de grafo (MTGNN, A3T-GCN, STGCN, GCNGRU, AGCRN, STID), GBMs, neuralforecast, Chronos-2 e GHR_INLA.</p>
+  <div class="tw"><table>
+    <tr><th>Modelo</th><th class="n">Afinação (× clim.)</th><th class="n">Teste (× BB)</th><th>Nota</th></tr>
+    <tr class="best"><td>MTGNN_UF+λ</td><td class="n">0,822</td><td class="n">0,846</td><td>melhor isolado</td></tr>
+    <tr class="best"><td>ENS_UF_top5 (final pré-registrado)</td><td class="n">0,798</td><td class="n">0,853</td><td>20 UFs &gt; BB; bate todas as equipes</td></tr>
+    <tr><td>A3TGCN_UF+λ</td><td class="n">0,848</td><td class="n">0,855</td><td>o mais estável (dp 0,22)</td></tr>
+    <tr><td>ARIMA_Fourier (região→UF)</td><td class="n">0,922</td><td class="n">0,865</td><td></td></tr>
+    <tr><td>GCNGRU_UF+λ · GBM_lgb_sel</td><td class="n">0,835 · 0,884</td><td class="n">0,881 · 0,883</td><td></td></tr>
+    <tr><td>VAR_macro · AutoARIMA_d0 · ARIMA_Fourier_UF</td><td class="n">0,89–0,94</td><td class="n">0,895 · 0,899 · 0,909</td><td></td></tr>
+    <tr><td>STGCN · DoisEstagios · XGBoost</td><td class="n">0,818–0,847</td><td class="n">0,932 · 0,970 · 1,021</td><td>bons na afinação, caíram no teste</td></tr>
+    <tr><td>AGCRN_UF+λ</td><td class="n">0,855</td><td class="n">1,030</td><td></td></tr>
+    <tr><td>AutoARIMA livre</td><td class="n">1,05</td><td class="n">1,39</td><td>extrapola a tendência</td></tr>
+    <tr><td>Chronos-2 sem / com covariáveis</td><td class="n">0,930 / 1,035</td><td class="n">1,137 / 1,568</td><td></td></tr>
+  </table></div>
+  <h3>Régua da compra de testes (Comp5, problema do jornaleiro, τ* = 0,75)</h3>
+  <p>O campeão do WIS não é o campeão da compra. <b>DoisEstagios_pool_UF</b> (GBM do tamanho com 461 séries + forma das temporadas passadas) teve custo 0,871 × climatologia no teste, contra 0,968 do ENS_UF_top5, que faltou em 46–52% das UF × temporada.</p>
+  <div class="lesson"><b>Receita vencedora das redes de grafo:</b> saída direta das 68 semanas, âncora + resíduo (alvo = log-incidência − climatologia), perda pinball nos 9 quantis, grafo das UFs (o MTGNN aprende um grafo direcionado), janela de 104 semanas, redes pequenas com 3 sementes e <b>λ = 0,8</b> (estreitar intervalos 20% melhora o WIS 1–4%). Prever direto por UF foi melhor que região→UF para quase todos. Variáveis: tirar qualquer grupo muda menos de 1%; o espaço é o que diferencia.</div>
+</section>
+
+<!-- ============================================================ FASE 6 -->
+<section class="ch" id="fase6">
+  <div class="ch-head"><h2>6 · A comparação com o Felipe e o retreino semanal</h2><span class="when">08–11/10/2026</span><span class="tag">semanal + temporada</span></div>
+  <h3>O "SMAPE de 16%" do Felipe</h3>
+  <p>Rodei o código dele nos microdados do SINAN: os dados batem com os nossos (correlação 0,9994; diferença de UF de notificação × residência). O modelo dele prevê <b>1 semana à frente</b>, e o "16%" é o WAPE ou o sMAPE de 0–100 nesse horizonte: só repetir a semana anterior já dá WAPE 16,8%. Na regra do IMDC, o mesmo XGBoost tem sMAPE 96%, contra 72% do BB e 60% da melhor equipe. No jogo dele (h = 1, 2023–24), os boosters perdem para a persistência (MAE 1.165 × 507); no meu jogo, ele faz 1,256 × BB.</p>
+  <h3>Todos os modelos em 1–4 semanas, nas 8 temporadas</h3>
+  <div class="tw"><table>
+    <tr><th>Semanal, teste 2022–25, h = 1</th><th class="n">R × clim.</th><th class="n">MAE</th><th class="n">WAPE</th><th class="n">IC90</th></tr>
+    <tr class="best"><td>ENS_GBM_ARIMA_sem</td><td class="n">0,224</td><td class="n">285</td><td class="n">13,0%</td><td class="n">91,2</td></tr>
+    <tr><td>GBM_xgb_todas_sem</td><td class="n">0,229</td><td class="n">311</td><td class="n">14,2%</td><td class="n">91,4</td></tr>
+    <tr><td>ARIMA_Fourier_sem / AutoARIMA_d0</td><td class="n">0,232</td><td class="n">252</td><td class="n">11,5%</td><td class="n">89,6</td></tr>
+    <tr><td>MTGNN_cresc_sem (alvo em crescimento)</td><td class="n">0,235</td><td class="n">281</td><td class="n">12,8%</td><td class="n">89–92</td></tr>
+    <tr class="ref"><td>Persistência</td><td class="n">0,253</td><td class="n">354</td><td class="n">16,2%</td><td class="n">88</td></tr>
+    <tr><td>Felipe XGB/LGBM/CAT (ponto)</td><td class="n">0,51–0,69</td><td class="n">799–890</td><td class="n">36–41%</td><td class="n">0</td></tr>
+    <tr><td>Redes de grafo com âncora</td><td class="n">0,54–0,63</td><td class="n">816–1.009</td><td class="n">37–46%</td><td class="n">81–89</td></tr>
+  </table></div>
+  <p>Na temporada, a rodada trouxe novos líderes: <b>ENS_grafos2_λ 0,835</b> e <b>MTGNN_pesopop_UF+λ 0,839</b> (perda pesada pela população), o melhor isolado até então.</p>
+  <div class="lesson"><b>Lições:</b> a 1 semana, ganha o simples e bem calibrado (ARIMA + GBM em crescimento). Redes de grafo só servem no semanal com alvo em crescimento (0,54 → 0,235). Covariáveis quase não ajudam. Na temporada, pesar pela população ajuda; prever crescimento piora. As medianas de temporada ficam 70–80% abaixo do total real de 2022–25.</div>
+</section>
+
+<!-- ============================================================ FASE 7 -->
+<section class="ch" id="fase7">
+  <div class="ch-head"><h2>7 · Rodada 2: pico, entressafra e otimização</h2><span class="when">11–12/10/2026</span><span class="tag">tópicos A–E</span></div>
+  <p>Cinco tópicos testados de forma complementar: métricas por fase (A), variáveis de fase/Rt e tsfresh (B, C), peso no pico, quantis altos, cabeça do total, pré-treino nas 435 regiões, calibração por horizonte e fase (D), Optuna, 10 sementes, Chronos-2 com LoRA e pesos de ensemble por stacking (E).</p>
+  <div class="tw"><table>
+    <tr><th>Resultado (teste 2022–25)</th><th>Número</th></tr>
+    <tr><td>Semanal h = 1</td><td>sem ganho: 0,224 (MAE 267)</td></tr>
+    <tr><td>Semanal h = 4 · ENS_stack_sem</td><td>0,404 contra 0,409; MAE 648 → 583; viés −20% → −12,5%</td></tr>
+    <tr><td>GBM com fase / tsfresh</td><td>0,227 (pequeno ganho); peso no pico e mediana L1 pioram</td></tr>
+    <tr class="best"><td>Temporada · ENS_grafos3_λ</td><td>0,831 × BB (grafos com λ + MTGNN_optuna10)</td></tr>
+    <tr><td>Variantes do MTGNN_pesopop (0,889 sem λ)</td><td>só o Optuna ganha (0,876); 10 sementes 0,890; fase, total, tsfresh, escala, quantis altos e pré-treino pioram o R, mas todas melhoram o pico</td></tr>
+    <tr><td>Pico · ENS_stack_UF</td><td>WIS log no pico 0,524 contra 0,693 do BB</td></tr>
+    <tr><td>Total · MTGNN_total_pp_UF+cal</td><td>erra o total em −1% (os melhores gerais erram −37%), mas R 1,2–1,6</td></tr>
+    <tr><td>ARIMAX com fase · Chronos-2 com LoRA</td><td>iguais ao modelo sem a mudança</td></tr>
+  </table></div>
+  <p>Relatório para a DASA: <a href="https://claude.ai/artifact/NeFkyaMGQLiWKRSdxt1Ea8">14 · Rodada 2</a>.</p>
+  <h3>O diagnóstico que mudou o rumo (13/10)</h3>
+  <p>Os gráficos por UF mostraram que, em 2023/24, a temporada previu <b>2–10% do real no Sul/Sudeste</b> (Brasil: 0,74 contra 6,70 milhões). Mas havia sinal em junho: casos de abril a junho relativos ao normal da UF (ρ 0,46) e variação do ENSO (ρ 0,42). Um ridge só com o passado previu o tamanho de 2023/24 com correlação 0,84 entre UFs. Daí veio a proposta de três peças: <b>normal + detector de anos grandes + modelo de pico</b> (<a href="https://claude.ai/artifact/Gk3ELYHdWriSWrmsFwDQK6">doc 15</a>).</p>
+</section>
+
+<!-- ============================================================ FASE 8 -->
+<section class="ch" id="fase8">
+  <div class="ch-head"><h2>8 · Rodada 3: detector de anos epidêmicos + mistura</h2><span class="when">13/10/2026</span><span class="tag">só CPU</span></div>
+  <p><b>Detector:</b> prevê o log do tamanho da temporada relativo ao normal da UF, nos cortes de junho a outubro, com casos e espalhamento relativos à mesma época, tendência, vizinhos, ENSO/IOD/PDO e imunidade (ridge, regressão quantílica, LightGBM quantílico e a média). <b>Normal:</b> ENS_grafos3_λ. <b>Mistura:</b> MIX_escala (reescala a trajetória quando o detector passa do limiar), MIX_forma (forma média dos anos grandes) e AJ_continuo (fração w do caminho até o tamanho previsto).</p>
+  <div class="tw"><table>
+    <tr><th>Modelo</th><th class="n">R × BB</th><th class="n">WIS abs.</th><th class="n">WIS pico</th><th class="n">Viés entressafra</th><th class="n">Altura</th><th class="n">Total</th><th class="n">Pico no IC90</th></tr>
+    <tr><td>ENS_grafos3_λ (normal)</td><td class="n">0,831</td><td class="n">1.343</td><td class="n">4.065</td><td class="n">+49%</td><td class="n">−42%</td><td class="n">−37%</td><td class="n">67%</td></tr>
+    <tr class="best"><td>AJ_continuo_UF (recomendada)</td><td class="n">0,828</td><td class="n">1.285</td><td class="n">3.883</td><td class="n">+74%</td><td class="n">−28%</td><td class="n">−25%</td><td class="n">64%</td></tr>
+    <tr><td><b>MIX_escala_UF</b></td><td class="n">1,190</td><td class="n">776</td><td class="n">2.136</td><td class="n">+156%</td><td class="n">−4%</td><td class="n">+5%</td><td class="n">91%</td></tr>
+    <tr><td>MIX_forma_UF</td><td class="n">1,242</td><td class="n">766</td><td class="n">2.113</td><td class="n">+173%</td><td class="n">−4%</td><td class="n">+5%</td><td class="n">91%</td></tr>
+    <tr class="ref"><td>BB</td><td class="n">1</td><td class="n">1.224</td><td class="n">3.651</td><td class="n">+108%</td><td class="n">−36%</td><td class="n">−24%</td><td class="n">73%</td></tr>
+  </table></div>
+  <div class="lesson"><b>Lições:</b> detector + reescala acerta o pico (altura −4%, WIS do pico −47%), mas reescalar a curva inteira infla a entressafra (+156%) e a régua R pune isso. O detector tem correlação 0,79–0,82 e sensibilidade 82–89%, mas precisão 50–56% e encolhe os extremos (SC 2023: ×45 contra ×206 real). Revisões mensais de julho a outubro ganham pouco (0,828 → 0,793 em outubro).</div>
+</section>
+
+<!-- ============================================================ FASE 9 -->
+<section class="ch" id="fase9">
+  <div class="ch-head"><h2>9 · Rodada 4: a literatura aplicada</h2><span class="when">13/10/2026</span><span class="tag">CPU + GPU</span></div>
+  <p>Uma busca no PubMed e no Consensus (doc 17) apontou: estabilidade entre surtos (Rypdal 2019), sinais de alerta precoce (Brett 2020), ciclos de suscetíveis (McGough 2021), competição de sorotipos (Finch 2025), Oceano Índico (Chen 2024), seca tipo SPEI (Lowe 2021), duas etapas (Francisco 2024), aumento sintético (Al Bannoud 2026), conformal (Mills 2025).</p>
+  <div class="tw"><table>
+    <tr><th>Peça nova</th><th>Implementação</th></tr>
+    <tr><td>Detector ampliado</td><td>alerta precoce, imunidade com esquecimento, SPEI, clima observado, SEAS5 emitida até o corte, temperatura do mar (ERSST v5), <b>sorotipo do SINAN</b> (encontrado no OpenDataSUS), método de duas etapas e versões conformes</td></tr>
+    <tr><td>MIX_elastico_UF</td><td>cada semana cresce conforme a sua elasticidade histórica ao tamanho, por nível: 0,09 nas semanas sem casos → 0,99 no pico</td></tr>
+    <tr><td>DoisEstagios_det_UF</td><td>tamanho do detector × forma de temporadas parecidas em tamanho</td></tr>
+    <tr><td>MTGNN_cond_UF (GPU)</td><td>MTGNN condicionado ao tamanho, aumento sintético ×2–8, 24 cenários do detector</td></tr>
+    <tr><td>ENS_regime_UF</td><td>pesos por faixa de P(ano grande), validação deixando uma temporada de fora, critério misto ½ R + ½ WIS absoluto</td></tr>
+  </table></div>
+  <div class="tw"><table>
+    <tr><th>Modelo</th><th class="n">R × BB</th><th class="n">WIS abs.</th><th class="n">Altura</th><th class="n">Total</th><th class="n">Pico no IC90</th></tr>
+    <tr><td>MTGNN_aug_UF</td><td class="n">0,886</td><td class="n">1.516</td><td class="n">−51%</td><td class="n">−37%</td><td class="n">57%</td></tr>
+    <tr><td>MIX_elastico_UF</td><td class="n">0,918</td><td class="n">1.491</td><td class="n">−43%</td><td class="n">−42%</td><td class="n">56%</td></tr>
+    <tr><td>ENS_regime_UF</td><td class="n">1,026</td><td class="n">946</td><td class="n">−30%</td><td class="n">−19%</td><td class="n">86%</td></tr>
+    <tr><td>DoisEstagios_det_UF</td><td class="n">1,255</td><td class="n">1.453</td><td class="n">−51%</td><td class="n">−44%</td><td class="n">67%</td></tr>
+    <tr><td>MTGNN_cond_UF</td><td class="n">1,292</td><td class="n">1.430</td><td class="n">−52%</td><td class="n">−42%</td><td class="n">66%</td></tr>
+    <tr><td>ENS_regime_UF+cal</td><td class="n">1,314</td><td class="n">856</td><td class="n">−15%</td><td class="n">+1%</td><td class="n">92%</td></tr>
+  </table></div>
+  <div class="warn"><b>O que deu errado:</b> o detector ampliado escolheu duas variáveis do Atlântico tropical norte, que são <b>nacionais</b> (iguais em todas as UFs, ~6 temporadas independentes). Em 2023 esse oceano bateu recorde e o sinal "previu" um ano pequeno: MG ×0,49 (real ×20). Correlação 0,79 → 0,57. Todos os membros novos herdaram o erro. Depois, descobrimos que o filtro de variáveis nacionais <b>nunca funcionou</b> (agrupava sem o corte).</div>
+  <p><b>Temporada rolante (EAKF):</b> não foi feita de propósito. Na SE25 não há dado da temporada que começa na SE41, então ela não ajuda a previsão de junho; depois de outubro, quem atualiza é o semanal.</p>
+</section>
+
+<!-- ============================================================ FASE 10 -->
+<section class="ch" id="fase10">
+  <div class="ch-head"><h2>10 · Rodada 5: modelo final por fase esperada</h2><span class="when">13–14/10/2026</span><span class="tag">só CPU</span></div>
+  <p>Detector corrigido (sem variáveis nacionais; candidatos R3, ampliado e a média; escolha pelo pinball com anos grandes 3×), membros refeitos (MIX_escala5, MIX_elastico5, DoisEstagios_det5, MTGNN_cond5 com as redes salvas) e ensembles por <b>fase esperada × regime</b> (ENS_fase, ENS_troca, calibração por fase). O detector escolhido foi o <b>R3:ridge</b> (correlação 0,82 no teste; anos grandes em ×0,83 do real).</p>
+  <div class="tw"><table>
+    <tr><th>Modelo</th><th class="n">R × BB</th><th class="n">UFs &gt; BB</th><th class="n">WIS</th><th class="n">WIS entressafra</th><th class="n">MAE</th><th class="n">WAPE</th><th class="n">sMAPE</th><th class="n">Altura</th><th class="n">Total</th></tr>
+    <tr><td>AJ_continuo (R3)</td><td class="n">0,828</td><td class="n">23</td><td class="n">1.285</td><td class="n">26,4</td><td class="n">1.672</td><td class="n">76,3%</td><td class="n">70,0</td><td class="n">−28%</td><td class="n">−25%</td></tr>
+    <tr><td>ENS_grafos3_λ (recomendado pelo protocolo)</td><td class="n">0,831</td><td class="n">20</td><td class="n">1.343</td><td class="n">23,6</td><td class="n">1.771</td><td class="n">80,8%</td><td class="n">75,3</td><td class="n">−42%</td><td class="n">−37%</td></tr>
+    <tr class="best"><td><b>MIX_elastico5_UF</b></td><td class="n">0,859</td><td class="n">21</td><td class="n">1.010</td><td class="n">27,8</td><td class="n">1.506</td><td class="n">68,8%</td><td class="n">70,2</td><td class="n">−12%</td><td class="n">−8%</td></tr>
+    <tr><td>ENS_fase_nivMIX_UF</td><td class="n">1,006</td><td class="n">12</td><td class="n">876</td><td class="n">37,6</td><td class="n">1.466</td><td class="n">66,9%</td><td class="n">64,6</td><td class="n">−19%</td><td class="n">−11%</td></tr>
+    <tr><td>ENS_troca_UF</td><td class="n">1,147</td><td class="n">9</td><td class="n">823</td><td class="n">41,0</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">−14%</td><td class="n">+7%</td></tr>
+    <tr><td>MIX_escala5_UF</td><td class="n">1,288</td><td class="n">4</td><td class="n">746</td><td class="n">55,1</td><td class="n">1.279</td><td class="n">58,4%</td><td class="n">70,4</td><td class="n">+12%</td><td class="n">+9%</td></tr>
+    <tr><td>MTGNN_cond5_UF</td><td class="n">1,436</td><td class="n">4</td><td class="n">1.026</td><td class="n">52,3</td><td class="n">–</td><td class="n">–</td><td class="n">–</td><td class="n">+4%</td><td class="n">+15%</td></tr>
+    <tr class="ref"><td>BB</td><td class="n">1</td><td class="n">–</td><td class="n">1.224</td><td class="n">39,0</td><td class="n">1.787</td><td class="n">81,6%</td><td class="n">73,0</td><td class="n">−36%</td><td class="n">−24%</td></tr>
+  </table></div>
+  <div class="lesson"><b>Lições:</b> o melhor equilíbrio foi o MIX_elastico5 (WIS −21% contra o AJ, altura −12% contra −28%). Os ensembles por fase ganham no pico (88% no IC90), mas pesos escolhidos em 4 temporadas inflaram a entressafra. O <b>critério misto</b> foi abandonado por ser difícil de interpretar; desde então, as métricas-padrão vão lado a lado. Um notebook de gráficos comparou 6 modelos em cada UF.</div>
+</section>
+
+<!-- ============================================================ FASE 11 -->
+<section class="ch" id="fase11">
+  <div class="ch-head"><h2>11 · Rodada 6: otimização com Optuna</h2><span class="when">13–14/10/2026</span><span class="tag">validação aninhada</span></div>
+  <p>Os dois modelos foram reescritos com <b>todos os parâmetros abertos</b> (reproduzindo a R5 com 1–4% de diferença) e cada um ganhou o seu detector: o da R5 ou um ridge reajustado (fonte das variáveis, janela, k, ρ, α, peso dos anos grandes), com alargamento, correção de viés e cauda próprios. <b>Objetivo sem critério misto:</b> WIS da fase ÷ R5, média geométrica entre UFs, com as outras fases piorando no máximo 5%. Busca em 2015–2021 (400 tentativas) e a busca inteira refeita deixando cada temporada de fora (120 por dobra).</p>
+  <div class="tw"><table>
+    <tr><th>Fora da amostra (÷ R5)</th><th class="n">Pico</th><th class="n">Entressafra</th><th class="n">Intermediária</th><th>Regra</th></tr>
+    <tr><td>MIX_elastico6</td><td class="n">0,927</td><td class="n">0,962</td><td class="n">1,075</td><td><span class="v no">não recomendado</span></td></tr>
+    <tr><td>MIX_escala6</td><td class="n">1,137</td><td class="n">0,859</td><td class="n">0,802</td><td><span class="v no">não recomendado</span></td></tr>
+  </table></div>
+  <div class="tw"><table>
+    <tr><th>Teste 2022–25</th><th class="n">R × BB</th><th class="n">WIS</th><th class="n">WIS pico</th><th class="n">WIS entressafra</th><th class="n">Altura</th><th class="n">Total</th></tr>
+    <tr><td>MIX_elastico6</td><td class="n">0,947</td><td class="n">876</td><td class="n">2.551</td><td class="n">31,2</td><td class="n">−9,5%</td><td class="n">−2%</td></tr>
+    <tr><td>MIX_escala6</td><td class="n">0,850</td><td class="n">1.048</td><td class="n">3.122</td><td class="n">31,0</td><td class="n">−21%</td><td class="n">−17%</td></tr>
+  </table></div>
+  <div class="lesson"><b>Lições:</b> a otimização andou ao longo da fronteira pico × entressafra, sem passar dela. O elástico melhorou o pico só alargando a faixa (a correção de viés para cima não generalizou; o Optuna escolheu β negativo). O escala virou um "elástico" e perdeu o pico. Nenhum preferiu o detector reajustado. A validação aninhada previu tudo isso antes do teste. Achado técnico: o detector R3:ridge só existe a partir de 2018.</div>
+</section>
+
+<!-- ============================================================ FASE 12 -->
+<section class="ch" id="fase12">
+  <div class="ch-head"><h2>12 · Rodada 7: ensemble do pico</h2><span class="when">13–14/10/2026</span><span class="tag">grade de ~1.950 combinações</span></div>
+  <p><b>Hipótese:</b> no pico, MIX_elastico5 (−12%) e MIX_escala5 (+12%) erram em sentidos opostos e podem se compensar. <b>Desenho:</b> nível previsto em junho na escala dos limiares da UF (0 = p25, 1 = p75), rampa suave para o peso do pico e <code>ENS = (1 − s)·BASE + s·[(1 − a)·elástico + a·escala]</code>. Escolha por grade com o objetivo da R6, validação aninhada em 2015–2021 e uma versão simples fixada a priori.</p>
+  <div class="tw"><table>
+    <tr><th>Teste 2022–25</th><th class="n">R × BB</th><th class="n">UFs &gt; BB</th><th class="n">WIS</th><th class="n">WIS pico</th><th class="n">WIS entressafra</th><th class="n">MAE</th><th class="n">WAPE</th><th class="n">sMAPE</th><th class="n">Altura</th><th class="n">Total</th></tr>
+    <tr class="best"><td><b>ENS_pico7_UF</b> (base AJ, 60% escala no pico, rampa em z = 2)</td><td class="n">0,808</td><td class="n">22</td><td class="n">902</td><td class="n">2.667</td><td class="n">27,3</td><td class="n">1.452</td><td class="n">66,3%</td><td class="n">65,7</td><td class="n">−20%</td><td class="n">−16%</td></tr>
+    <tr class="best"><td><b>ENS_pico7_simples</b> (a priori: base elástico, 50/50, z = 1)</td><td class="n">0,935</td><td class="n">16</td><td class="n">721</td><td class="n">2.061</td><td class="n">29,6</td><td class="n">1.277</td><td class="n">58,3%</td><td class="n">67,5</td><td class="n">+2%</td><td class="n">−0,6%</td></tr>
+    <tr><td>MIX_elastico5</td><td class="n">0,859</td><td class="n">21</td><td class="n">1.010</td><td class="n">2.994</td><td class="n">27,8</td><td class="n">1.506</td><td class="n">68,8%</td><td class="n">70,2</td><td class="n">−12%</td><td class="n">−8%</td></tr>
+    <tr><td>AJ_continuo</td><td class="n">0,828</td><td class="n">23</td><td class="n">1.285</td><td class="n">3.883</td><td class="n">26,4</td><td class="n">1.672</td><td class="n">76,3%</td><td class="n">70,0</td><td class="n">−28%</td><td class="n">−25%</td></tr>
+  </table></div>
+  <div class="warn"><b>Ressalvas:</b> a validação aninhada <b>não</b> recomendou o ENS_pico7_UF (fora da amostra: pico 0,95, mas entressafra 1,09 e intermediária 1,11); adotá-lo é decisão tomada olhando o teste. A escolha variou entre as dobras e o centro da rampa caiu na borda da grade. Na maioria das UFs × temporadas, os dois membros erram para o mesmo lado: o ganho veio mais de usar o melhor modelo em cada fase do que de um erro anular o outro.</div>
+</section>
+
+<!-- ============================================================ CATÁLOGO -->
+<section class="ch" id="arquiteturas">
+  <h2>Catálogo de arquiteturas e modelos testados</h2>
+  <p class="muted">Agrupados por família. "Melhor resultado" é na régua da fase em que o modelo foi testado.</p>
+  <div class="tw"><table>
+    <tr><th>Família</th><th>Modelos</th><th>Melhor resultado</th><th>Destino</th></tr>
+    <tr><td>AGCRN municipal (1 semana)</td><td>v0 com SGP, v1 com ensemble LGBM+Ridge, M1, M2 bimodal, M3 com MHA e máscara macrorregional, M2 v2, v3, v3.1</td><td>MAE estadual 243 (S1); persistência 185</td><td><span class="v no">abandonada</span> com a virada</td></tr>
+    <tr><td>AGCRN de temporada</td><td>V4 versão A (direta, 68 semanas), AGCRN da competição, AGCRN_UF(+λ)</td><td>1,030 × BB (UF+λ)</td><td><span class="v no">abandonada</span></td></tr>
+    <tr><td>Redes de grafo por UF</td><td>MTGNN (pesopop, optuna10, cresc, misto, v2, cond, aug), A3T-GCN, STGCN, GCNGRU, STID</td><td>MTGNN_pesopop+λ 0,839; ensemble de grafos 0,831</td><td><span class="v ok">base do "normal"</span></td></tr>
+    <tr><td>Estatísticos</td><td>ARIMA_Fourier (região e UF), auto.arima R/Python livre e d = 0, ARIMAX, ETS_MSTL, Prophet, AR longo, AR recursivo, canal endêmico, climatologia</td><td>ARIMA_Fourier 0,865</td><td><span class="v mix">membro e régua</span></td></tr>
+    <tr><td>Multivariados</td><td>VAR por macrorregião, VAR espacial, BVAR Minnesota (com e sem ENSO)</td><td>VAR_macroX 0,892</td><td><span class="v mix">sem uso final</span></td></tr>
+    <tr><td>Bayesianos (INLA)</td><td>BB_INLA (reimplementação), GHR_INLA, GHR_NL_INLA</td><td>GHR_NL+λ 1,017</td><td><span class="v no">não fiéis o bastante</span></td></tr>
+    <tr><td>Árvores</td><td>LightGBM direto, XGBoost quantis, GBM_lgb/xgb (todas, sel, casos, fase, tsfresh, optuna), modelos do Felipe (XGB, LGBM, CatBoost)</td><td>GBM_lgb_sel 0,883 (temporada); 0,224 no semanal com ARIMA</td><td><span class="v ok">semanal</span></td></tr>
+    <tr><td>Tamanho × forma</td><td>V4 versão B, Tamanho_x_forma, DoisEstagios (UF, pool, pool_sel, det)</td><td>DoisEstagios_pool: custo de compra 0,871</td><td><span class="v ok">compra de testes</span></td></tr>
+    <tr><td>Epidemiológicos</td><td>SURGE, Renovação_S</td><td>Renovação_S 1º no Sul</td><td><span class="v mix">sem uso final</span></td></tr>
+    <tr><td>Redes profundas genéricas</td><td>NHITS, TFT, DeepAR, TSMixer (com e sem exógenas)</td><td>NHITS com exógenas 1,03</td><td><span class="v no">descartadas</span></td></tr>
+    <tr><td>Modelos de fundação</td><td>Chronos, Chronos-2 (com e sem covariáveis), Chronos-2 ajustado com LoRA</td><td>Chronos-2 1,137; LoRA sem ganho</td><td><span class="v no">descartados</span></td></tr>
+    <tr><td>Detector de anos grandes</td><td>ridge, regressão quantílica, LightGBM quantílico, média, duas etapas, versões conformes, ridge reajustado por Optuna</td><td>R3:ridge, correlação 0,82</td><td><span class="v ok">em uso</span></td></tr>
+    <tr><td>Misturas com o detector</td><td>MIX_escala, MIX_forma, AJ_continuo, MIX_elastico (R4, R5, R6), MIX_escala5/6</td><td>AJ 0,828; MIX_elastico5 altura −12%</td><td><span class="v ok">membros do ensemble</span></td></tr>
+    <tr><td>Ensembles</td><td>mediana, pesos, top-k, stacking (E4), por porte, por regime, por fase, troca de especialista, ensemble do pico</td><td>ENS_pico7_UF 0,808</td><td><span class="v ok">candidato operacional</span></td></tr>
+    <tr><td>Pós-processamento</td><td>MinT (simples, WLS, dinâmico), fator de viés por UF, λ de largura, δ de posição, conformal, calibração por fase</td><td>λ = 0,8: −1 a −4% no WIS</td><td><span class="v mix">λ em uso; MinT e conformal descartados</span></td></tr>
+  </table></div>
+</section>
+
+<!-- ============================================================ HIPÓTESES -->
+<section class="ch" id="hipoteses">
+  <h2>Hipóteses levantadas e o que os dados disseram</h2>
+  <div class="tw"><table>
+    <tr><th>Hipótese</th><th>Onde foi testada</th><th>Veredito</th></tr>
+    <tr><td>Tratar pico e seca com especialistas separados melhora</td><td>Modelo 2 (jun)</td><td><span class="v ok">confirmada</span> r 0,67 → 0,93</td></tr>
+    <tr><td>Atenção espacial no especialista de pico ajuda</td><td>Modelo 3</td><td><span class="v no">refutada</span> colapsou (r 0,39)</td></tr>
+    <tr><td>Afya e chikungunya são preditores úteis</td><td>SHAP refeito</td><td><span class="v no">refutada</span> abaixo do ruído</td></tr>
+    <tr><td>MinT melhora a soma município → estado</td><td>Diagnóstico da v2</td><td><span class="v no">refutada</span> usava o teste; honesto 829</td></tr>
+    <tr><td>A habilidade de 1 semana se transfere para a temporada</td><td>Experimento de 29/09</td><td><span class="v no">refutada</span> 0,19 → 1,02</td></tr>
+    <tr><td>Direto é melhor que recursivo na temporada</td><td>Experimento de 29/09</td><td><span class="v no">refutada</span> empatam (0,98 × 1,02)</td></tr>
+    <tr><td>Clima, SEAS5 e ENSO melhoram a temporada</td><td>V4, competição, CompUF</td><td><span class="v no">refutada</span> SEAS5 atrapalha; ENSO −1,7%; Chronos com covariáveis piora</td></tr>
+    <tr><td>Taxa de ataque recente indica imunidade</td><td>Ablação do V4</td><td><span class="v no">refutada</span> atrapalha 6% ("ano grande → ano grande")</td></tr>
+    <tr><td>Conformal com temporadas passadas melhora os intervalos</td><td>V4</td><td><span class="v no">refutada</span> outro regime (2016–21)</td></tr>
+    <tr><td>Mediana do ensemble vence média e pesos</td><td>V4, competição</td><td><span class="v ok">confirmada</span></td></tr>
+    <tr><td>AGCRN serve para a temporada</td><td>Competição e CompUF</td><td><span class="v no">refutada</span> 1,378 e 1,030</td></tr>
+    <tr><td>Prever direto por UF é melhor que região → UF</td><td>CompUF (afinação)</td><td><span class="v mix">parcial</span> sim para quase todos; ARIMA por região ganhou no teste</td></tr>
+    <tr><td>Perda pinball é melhor que NLL da NB</td><td>CompUF</td><td><span class="v ok">confirmada</span> 0,82–0,85 contra 0,865</td></tr>
+    <tr><td>Intervalos das redes estão largos demais</td><td>CompUF</td><td><span class="v ok">confirmada</span> λ = 0,8 ganha 1–4%</td></tr>
+    <tr><td>O espaço (grafo, vizinhos) é o que diferencia</td><td>CompUF</td><td><span class="v ok">confirmada</span> grafos vencem os mesmos insumos sem grafo</td></tr>
+    <tr><td>O "SMAPE de 16%" do Felipe é melhor que o nosso</td><td>Doc 10</td><td><span class="v no">refutada</span> é outro desfecho (h = 1); na regra do IMDC, sMAPE 96%</td></tr>
+    <tr><td>Alvo em crescimento ajuda as redes</td><td>Semanal</td><td><span class="v mix">parcial</span> ajuda no semanal (0,54 → 0,235), piora a temporada</td></tr>
+    <tr><td>Pesar a perda pela população ajuda estados grandes</td><td>Semanal (temporada)</td><td><span class="v ok">confirmada</span> 0,846 → 0,839</td></tr>
+    <tr><td>Fase/Rt, tsfresh, Optuna, 10 sementes, peso no pico, cabeça do total, pré-treino</td><td>Rodada 2</td><td><span class="v mix">parcial</span> pequenos ganhos semanais; Optuna ganha na temporada; o resto melhora o pico e piora o R</td></tr>
+    <tr><td>Chronos-2 ajustado com LoRA supera o original</td><td>Rodada 2</td><td><span class="v no">refutada</span> 0,252 × 0,253</td></tr>
+    <tr><td>Em junho já há sinal do tamanho da próxima temporada</td><td>Doc 15, R3</td><td><span class="v ok">confirmada</span> correlação 0,82; mas encolhe os extremos e metade dos alarmes é falsa</td></tr>
+    <tr><td>Reescalar o normal pelo detector acerta o pico</td><td>R3</td><td><span class="v ok">confirmada</span> altura −4%, mas infla a entressafra</td></tr>
+    <tr><td>A entressafra cresce menos que o pico nos anos grandes</td><td>R4 (elasticidade)</td><td><span class="v ok">confirmada</span> 0,09 → 0,99 por nível</td></tr>
+    <tr><td>Temperatura do mar e sorotipo melhoram o detector</td><td>R4</td><td><span class="v no">refutada</span> o Atlântico norte sobreajustou 2023</td></tr>
+    <tr><td>MTGNN condicionado + aumento sintético aprende anos grandes</td><td>R4, R5</td><td><span class="v no">refutada</span> 1,29–1,44</td></tr>
+    <tr><td>Pesos por regime ou por fase resolvem pico e entressafra juntos</td><td>R4, R5</td><td><span class="v mix">parcial</span> ganham no pico, inflam a entressafra</td></tr>
+    <tr><td>Temporada rolante (EAKF) melhora a previsão de junho</td><td>R4 (desenho)</td><td><span class="v no">descartada</span> sem dado da temporada na SE25</td></tr>
+    <tr><td>Otimizar os parâmetros de cada modelo resolve o pico</td><td>R6</td><td><span class="v no">refutada</span> só troca erro entre as fases</td></tr>
+    <tr><td>Elástico e escala se compensam no pico</td><td>R7</td><td><span class="v mix">parcial</span> o ensemble ganhou (0,808), mas por especialização</td></tr>
+  </table></div>
+</section>
+
+<!-- ============================================================ BUGS -->
+<section class="ch" id="bugs">
+  <h2>Bugs e problemas de dados encontrados</h2>
+  <div class="tw"><table>
+    <tr><th>Quando</th><th>Problema</th><th>Efeito</th><th>Correção</th></tr>
+    <tr><td class="n">28/09</td><td>Junções do R geravam linhas duplicadas</td><td>"Picos" falsos e pesos distorcidos</td><td>Bancos V8 do zero</td></tr>
+    <tr><td class="n">28/09</td><td>ENSO zerado, Afya constante antes de 2021, ilhas com 0 °C, previsão climática desalinhada</td><td>Afya virou "porte da cidade"</td><td>V8 + SHAP refeito</td></tr>
+    <tr><td class="n">28/09</td><td>Datas da submissão deslocadas em +7 dias</td><td>Submissão errada</td><td>Corrigido no V4</td></tr>
+    <tr><td class="n">29/09</td><td>Previsão de t+1 comparada com o real de t</td><td>Métricas desalinhadas</td><td>t−1 prevê t, com aquecimento</td></tr>
+    <tr><td class="n">29/09</td><td>Especialista SECA nunca validado (L_Val = 0)</td><td>Treinava sempre até 200 épocas</td><td>Validação na última temporada</td></tr>
+    <tr><td class="n">29/09</td><td>MinT usava os casos reais do teste</td><td>Números otimistas (560 contra 829)</td><td>Calibração só na validação</td></tr>
+    <tr><td class="n">29/09</td><td>Losses assimétricas</td><td>PICO 3–5× o real; SECA 0,65×</td><td>Losses equilibradas (v3)</td></tr>
+    <tr><td class="n">29/09</td><td>Mediana da NB muito inflada</td><td>Mediana estadual a ⅓ do real</td><td>v3.1: mediana sem inflação</td></tr>
+    <tr><td class="n">29/09</td><td>Pesos dos intervalos do WIS trocados no 1º script</td><td>Experimento errado</td><td>Refeito</td></tr>
+    <tr><td class="n">30/09</td><td>AR longo explodia; ARIMA/ETS extrapolavam a tendência</td><td>R de 2,9–3,7</td><td>Teto; sem drift, d = 0</td></tr>
+    <tr><td class="n">30/09</td><td>INLA travava no Windows e no Drive (sem permissão de execução)</td><td>BB/GHR não rodavam</td><td>Rodar de <code>/content</code>, pacote <code>sn</code></td></tr>
+    <tr><td class="n">30/09</td><td><code>val_size</code> menor que o horizonte no neuralforecast</td><td>4 redes falharam</td><td><code>val_size = H</code></td></tr>
+    <tr><td class="n">01/10</td><td>Duas pastas <code>resultados_uf</code> e a seção 6 do Comp5 misturando temporadas</td><td>Comparações injustas</td><td>Leitura robusta; filtrar temporadas</td></tr>
+    <tr><td class="n">11/10</td><td>torchao 0.10 do Colab travava o LoRA</td><td>R2_5 não rodava</td><td>Desinstalar e desligar a checagem</td></tr>
+    <tr><td class="n">14/10</td><td>Filtro de variáveis nacionais agrupava sem o corte</td><td>Atlântico norte entrou e quebrou 2023</td><td>Corrigido em <code>_nacional</code></td></tr>
+    <tr><td class="n">14/10</td><td>Detector R3:ridge só existe a partir de 2018</td><td>2015–2016 sem detector na validação</td><td>Ridge reajustado como substituto</td></tr>
+  </table></div>
+</section>
+
+<!-- ============================================================ MÉTRICAS -->
+<section class="ch" id="metricas">
+  <h2>Glossário das métricas usadas</h2>
+  <div class="tw"><table>
+    <tr><th>Métrica</th><th>O que mede</th><th>Como ler</th></tr>
+    <tr><td>MAE</td><td>erro absoluto médio da mediana, em casos por semana</td><td>menor é melhor; dominado pelos estados grandes</td></tr>
+    <tr><td>RMSE</td><td>raiz do erro quadrático médio</td><td>pune mais os erros grandes (picos)</td></tr>
+    <tr><td>WAPE</td><td>soma dos erros ÷ soma dos casos</td><td>58% = errou o equivalente a 58% dos casos</td></tr>
+    <tr><td>sMAPE</td><td>média de 2|p − y| / (|p| + |y|), escala 0–200</td><td>trata UFs pequenas e grandes igual; a versão 0–100 é a metade</td></tr>
+    <tr><td>r (Pearson)</td><td>se a curva sobe e desce na hora certa</td><td>maior é melhor; não vê o nível</td></tr>
+    <tr><td>IC50 / IC90 / IC95</td><td>% dos casos dentro de cada intervalo</td><td>ideal: perto de 50, 90 e 95</td></tr>
+    <tr><td>WIS</td><td>interval score ponderado sobre 9 quantis (régua do IMDC)</td><td>pune ao mesmo tempo o erro da mediana e intervalos largos ou que não cobrem</td></tr>
+    <tr><td>R × BB</td><td>WIS ÷ WIS do modelo-base oficial, média geométrica por UF e temporada</td><td>0,808 = 19% menos erro que o BB, com cada UF pesando igual</td></tr>
+    <tr><td>R × climatologia / × persistência</td><td>o mesmo, contra outras referências</td><td>usadas na afinação e no semanal</td></tr>
+    <tr><td>WIS por fase</td><td>WIS só nas semanas de pico (≥ p75 da UF), entressafra (&lt; p25) ou intermediárias</td><td>mostra onde o modelo erra</td></tr>
+    <tr><td>WIS da fase ÷ referência</td><td>razão contra um modelo de referência na mesma UF, média geométrica</td><td>objetivo das rodadas 6 e 7</td></tr>
+    <tr><td>Erro da altura do pico / do total</td><td>máximo previsto ÷ máximo real − 1; total previsto ÷ total real − 1 (medianas por UF × temporada)</td><td>negativo = fica baixo</td></tr>
+    <tr><td>Pinball</td><td>perda quantílica do detector</td><td>usada para escolher o detector, com anos grandes valendo 3×</td></tr>
+    <tr><td>Custo de compra (jornaleiro)</td><td>custo realizado comprando o quantil τ* do total ÷ custo da climatologia</td><td>régua de negócio para a DASA</td></tr>
+    <tr><td>Critério misto</td><td>½ R + ½ WIS absoluto relativo</td><td><span class="v no">abandonado</span> difícil de interpretar</td></tr>
+  </table></div>
+</section>
+
+<!-- ============================================================ AGORA -->
+<section class="ch" id="agora">
+  <h2>Onde estamos e o que falta</h2>
+  <ul>
+    <li><b>Temporada:</b> o ENS_pico7_UF tem o melhor R × BB do projeto (0,808), abaixo da melhor equipe do 3º IMDC (0,870). Ressalva: a validação aninhada não o recomendou. O ENS_pico7_simples, fixado a priori, é o melhor em altura do pico (+2%), total (−0,6%), MAE e WAPE.</li>
+    <li><b>Semanal:</b> ENS_GBM_ARIMA (h = 1, 0,224 × climatologia, MAE 267–285) e ENS_stack_sem (h = 2–4) estão prontos.</li>
+    <li><b>Compra de testes:</b> DoisEstagios_pool para o total; o simples da R7 é o candidato novo para total e pico.</li>
+    <li><b>Limite conhecido:</b> o erro que sobra é o do detector. Ele acerta a direção (correlação 0,82), mas encolhe os anos extremos e erra metade dos alarmes. Nenhuma variável externa testada até agora melhorou isso fora da amostra.</li>
+    <li><b>Próximos passos possíveis:</b> checar o ENS_pico7 na temporada 2025/26 quando terminar (teste independente); ampliar a grade da R7 (o centro da rampa caiu na borda); montar o notebook de produção; testar dados da DASA (positividade de exames) no detector.</li>
+  </ul>
+  <p class="note">Fontes: documentos 00 a 21 de <code>_MAPA_DO_PROJETO</code>, o <code>metricas.csv</code> e as tabelas <code>avaliacao_r2</code> a <code>avaliacao_r7</code> no Drive. Atualizado em 14/10/2026.</p>
+</section>
+</main>
+</div>

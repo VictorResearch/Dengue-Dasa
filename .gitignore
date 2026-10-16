@@ -1,0 +1,21 @@
+# dados (baixados e processados pelos scripts; não vão para o repositório)
+dados/brutos/
+dados/v4/
+dados/uf/
+dados/municipal/
+dados/referencias_imdc3/
+# área de trabalho e resultados dos notebooks
+/area_de_trabalho/
+/resultados_*/
+/cache_*/
+/avaliacao_*/
+/producao_semanal/
+/producao_temporada/
+/relatorio_campeoes/
+*.parcial
+*.tmp
+*.pt
+*.db
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
