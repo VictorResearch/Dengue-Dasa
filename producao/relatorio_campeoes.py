@@ -105,7 +105,7 @@ def diagrama_semanal():
 <defs><marker id="seta" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
 <rect x="10" y="150" width="200" height="160" rx="6" fill="none" stroke="currentColor" stroke-opacity=".45"/>
 <text x="22" y="174" font-size="12.5" font-weight="700" fill="currentColor">Dados até a semana t</text>
-<text x="22" y="196" font-size="12" fill="currentColor">casos por UF (log-incidência)</text>
+<text x="22" y="196" font-size="12" fill="currentColor">incidência por UF (log)</text>
 <text x="22" y="215" font-size="12" fill="currentColor">casos dos vizinhos</text>
 <text x="22" y="234" font-size="12" fill="currentColor">clima, ENSO, SEAS5</text>
 <text x="22" y="253" font-size="12" fill="currentColor">fase e Rt da epidemia</text>
@@ -113,7 +113,7 @@ def diagrama_semanal():
 <text x="22" y="296" font-size="11" fill="currentColor" fill-opacity=".7">cada membro retreinado</text>
 <line x1="210" y1="230" x2="246" y2="230" stroke="currentColor" stroke-opacity=".5" marker-end="url(#seta)"/>
 <text x="216" y="222" font-size="11" fill="currentColor" fill-opacity=".7">treina</text>
-<rect x="610" y="150" width="230" height="160" rx="6" fill="var(--blue-soft)" stroke="var(--blue)"/>
+<rect x="610" y="150" width="240" height="160" rx="6" fill="var(--blue-soft)" stroke="var(--blue)"/>
 <text x="622" y="174" font-size="12.5" font-weight="700" fill="currentColor">Pesos (stacking)</text>
 <text x="622" y="196" font-size="12" fill="currentColor">um conjunto de 9 pesos para</text>
 <text x="622" y="215" font-size="12" fill="currentColor">cada horizonte (1–4 semanas)</text>
@@ -121,8 +121,8 @@ def diagrama_semanal():
 <text x="622" y="253" font-size="12" fill="currentColor">entressafra · intermediária · pico</text>
 <text x="622" y="276" font-size="11" fill="currentColor" fill-opacity=".7">12 combinações, escolhidas na</text>
 <text x="622" y="292" font-size="11" fill="currentColor" fill-opacity=".7">afinação 2018–2021 (menor WIS)</text>
-<line x1="840" y1="230" x2="876" y2="230" stroke="currentColor" stroke-opacity=".5" marker-end="url(#seta)"/>
-<text x="842" y="222" font-size="11" fill="currentColor" fill-opacity=".7">média</text>
+<line x1="850" y1="230" x2="876" y2="230" stroke="currentColor" stroke-opacity=".5" marker-end="url(#seta)"/>
+
 <rect x="880" y="170" width="170" height="120" rx="6" fill="none" stroke="var(--orange)" stroke-width="1.5"/>
 <text x="892" y="194" font-size="12.5" font-weight="700" fill="currentColor">Previsão</text>
 <text x="892" y="216" font-size="12" fill="currentColor">semanas t+1 … t+4</text>
@@ -232,7 +232,8 @@ def _tabela_df(df, colunas=None, max_linhas=40):
     return f'<div class="tw"><table><tr>{cab}</tr>{corpo}</table></div>'
 
 
-def gerar(arq, figuras=None, tab_semanal=None, tab_temporada=None, info=None):
+def gerar(arq, figuras=None, tab_semanal=None, tab_temporada=None, info=None, fragmento=False):
+    """fragmento=True: sem <!doctype>/<html>/<head>/<body> (para publicar como página que já tem o esqueleto)."""
     info = info or {}
     if figuras:
         nav = ''.join(f'<a href="#u-{html.escape(u)}">{html.escape(u)}</a>' for u in figuras)
@@ -291,6 +292,8 @@ Regiões e Brasil somam as UFs; as faixas somadas são conservadoras.</p>
 {graficos}</section>
 <p class="note" style="margin-top:40px">Métricas: teste 2022–2025 do projeto (docs/05_modelos_campeoes.md). Gerado por producao/relatorio_campeoes.py.</p>
 </div></body></html>"""
+    if fragmento:
+        doc = doc[doc.index('<title>'):].replace('</style></head><body>', '</style>').replace('</div></body></html>', '</div>')
     with open(arq, 'w', encoding='utf-8') as f:
         f.write(doc)
     return arq
