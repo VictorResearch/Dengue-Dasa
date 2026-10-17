@@ -66,6 +66,10 @@ dengue-imdc-previsao/
 ### 1. Ambiente
 
 ```bash
+git clone https://github.com/alphaHunterPrimal/Dengue-Dasa.git
+```
+
+```bash
 python -m venv .venv
 ```
 
